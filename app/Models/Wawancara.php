@@ -48,7 +48,7 @@ class Wawancara extends Model
         'nama_narasumber',
         'jabatan_narasumber',
         'nama_pewawancara',
-    ];
+    ];  
 
     protected function casts(): array
     {

@@ -118,7 +118,7 @@
         <form action="{{ route('tendik.store') }}" method="POST" class="space-y-6">
             @csrf
 
-            <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+            <section class="rounded-2xl border border-slate-200 shadow-sm sm:p-6 bg-white shadow-sm">
                 <div class="mb-5 border-b border-slate-100 pb-4">
                     <h2 class="text-lg font-bold text-slate-800">A. Identitas Petugas Monev</h2>
                     <p class="mt-1 text-sm text-slate-500">Masukkan identitas petugas yang melakukan monitoring dan
@@ -202,11 +202,13 @@
                         <select id="jabatan_responden" name="jabatan_responden" required
                             class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
                             <option value="">Pilih jabatan</option>
-                            <option value="Operator Sekolah" @selected(old('jabatan_responden') === 'Operator Sekolah')>
-                                Operator Sekolah</option>
-                            <option value="Bendahara Sekolah" @selected(old('jabatan_responden') === 'Bendahara Sekolah')>
-                                Bendahara Sekolah</option>
-                            <option value="Lainnya" @selected(old('jabatan_responden') === 'Lainnya')>Lainnya</option>
+                            <option value="Tendik" @selected(old('jabatan_responden') === 'Tendik')>Tendik</option>
+                            <option value="Operator" @selected(old('jabatan_responden') === 'Operator')>Operator</option>
+                            <option value="Bendahara" @selected(old('jabatan_responden') === 'Bendahara')>Bendahara</option>
+                            <option value="Kepala Sekolah" @selected(old('jabatan_responden') === 'Kepala Sekolah')>Kepala
+                                Sekolah</option>
+                            <option value="Rekan Sejawat/Guru" @selected(old('jabatan_responden') === 'Rekan Sejawat/Guru')>
+                                Rekan Sejawat/Guru</option>
                         </select>
                         @error('jabatan_responden')
                         <p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
@@ -257,7 +259,7 @@
                 </div>
             </section>
 
-            <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm" data-level-section="1">
                 <div class="border-b border-slate-100 bg-slate-50 px-5 py-4 sm:px-6">
                     <h2 class="text-lg font-bold text-slate-800">Level I — Reaksi</h2>
                     <p class="mt-1 text-sm text-slate-500">Penilaian terhadap materi, narasumber/fasilitator, layanan, dan
@@ -641,7 +643,8 @@
                             </svg>
                             <div class="min-w-0">
                                 <h3 class="text-sm font-bold text-slate-800">Rubrik Penilaian Level I — Reaksi</h3>
-                                <p class="mt-0.5 text-xs leading-5 text-slate-500">Makna skor 1–4 untuk setiap indikator pada Level I (Reaksi). Klik untuk melihat atau menyembunyikan.</p>
+                                <p class="mt-0.5 text-xs leading-5 text-slate-500">Makna skor 1–4 untuk setiap indikator
+                                    pada Level I (Reaksi). Klik untuk melihat atau menyembunyikan.</p>
                             </div>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg"
@@ -656,134 +659,211 @@
                             <table class="w-full min-w-[960px] border-collapse text-left">
                                 <thead class="bg-slate-100">
                                     <tr>
-                                        <th class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 w-12 text-center">No</th>
-                                        <th class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 w-44">Indikator</th>
-                                        <th class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">Skor 4 (Sangat Baik)</th>
-                                        <th class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">Skor 3 (Baik)</th>
-                                        <th class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">Skor 2 (Cukup)</th>
-                                        <th class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">Skor 1 (Kurang)</th>
+                                        <th
+                                            class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 w-12 text-center">
+                                            No</th>
+                                        <th
+                                            class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 w-44">
+                                            Indikator</th>
+                                        <th
+                                            class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">
+                                            Skor 4 (Sangat Baik)</th>
+                                        <th
+                                            class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">
+                                            Skor 3 (Baik)</th>
+                                        <th
+                                            class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">
+                                            Skor 2 (Cukup)</th>
+                                        <th
+                                            class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">
+                                            Skor 1 (Kurang)</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">1</td>
                                         <td class="px-3 py-3 text-sm font-semibold text-slate-700">Relevansi materi</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Seluruh materi sangat sesuai dengan tugas dan kebutuhan kerja saya.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sebagian besar materi sesuai dengan tugas dan kebutuhan kerja saya.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Hanya sebagian kecil materi yang sesuai dengan tugas saya.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Materi tidak sesuai dengan tugas dan kebutuhan kerja saya.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Seluruh materi sangat sesuai
+                                            dengan tugas dan kebutuhan kerja saya.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sebagian besar materi sesuai
+                                            dengan tugas dan kebutuhan kerja saya.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Hanya sebagian kecil materi
+                                            yang sesuai dengan tugas saya.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Materi tidak sesuai dengan
+                                            tugas dan kebutuhan kerja saya.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">2</td>
-                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Kelengkapan dan keruntutan</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Cakupan materi lengkap, runtut, dan seluruhnya mudah diikuti.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Cakupan lengkap dan runtut; sebagian kecil perlu penjelasan tambahan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Cakupan kurang lengkap atau urutan sering membingungkan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Cakupan tidak lengkap dan sulit diikuti.</td>
+                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Kelengkapan dan
+                                            keruntutan</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Cakupan materi lengkap,
+                                            runtut, dan seluruhnya mudah diikuti.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Cakupan lengkap dan runtut;
+                                            sebagian kecil perlu penjelasan tambahan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Cakupan kurang lengkap atau
+                                            urutan sering membingungkan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Cakupan tidak lengkap dan
+                                            sulit diikuti.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">3</td>
                                         <td class="px-3 py-3 text-sm font-semibold text-slate-700">Kemutakhiran materi</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Seluruh materi sesuai ketentuan dan perkembangan terbaru.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sebagian besar materi sesuai; sedikit bagian perlu diperbarui.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Banyak bagian materi yang sudah tidak sesuai ketentuan terbaru.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Materi tidak sesuai ketentuan dan perkembangan terbaru.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Seluruh materi sesuai
+                                            ketentuan dan perkembangan terbaru.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sebagian besar materi sesuai;
+                                            sedikit bagian perlu diperbarui.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Banyak bagian materi yang
+                                            sudah tidak sesuai ketentuan terbaru.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Materi tidak sesuai ketentuan
+                                            dan perkembangan terbaru.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">4</td>
                                         <td class="px-3 py-3 text-sm font-semibold text-slate-700">Keterterapan materi</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Seluruh materi dilengkapi contoh/praktik dan dapat langsung diterapkan di sekolah.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sebagian besar materi dapat langsung diterapkan di sekolah.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Hanya sebagian kecil materi yang dapat diterapkan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Materi tidak dapat diterapkan di sekolah.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Seluruh materi dilengkapi
+                                            contoh/praktik dan dapat langsung diterapkan di sekolah.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sebagian besar materi dapat
+                                            langsung diterapkan di sekolah.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Hanya sebagian kecil materi
+                                            yang dapat diterapkan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Materi tidak dapat diterapkan
+                                            di sekolah.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">5</td>
                                         <td class="px-3 py-3 text-sm font-semibold text-slate-700">Bahan pendukung</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Modul, tayangan, dan contoh dokumen lengkap, jelas, dan sangat membantu.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Bahan pendukung lengkap dan cukup membantu.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Bahan pendukung kurang lengkap atau kurang jelas.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Bahan pendukung tidak tersedia atau tidak membantu.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Modul, tayangan, dan contoh
+                                            dokumen lengkap, jelas, dan sangat membantu.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Bahan pendukung lengkap dan
+                                            cukup membantu.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Bahan pendukung kurang
+                                            lengkap atau kurang jelas.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Bahan pendukung tidak
+                                            tersedia atau tidak membantu.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">6</td>
                                         <td class="px-3 py-3 text-sm font-semibold text-slate-700">Penguasaan materi</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sangat menguasai materi; jawaban selalu tepat dan disertai contoh nyata.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Menguasai materi; sebagian besar jawaban tepat.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kurang menguasai materi; jawaban sering kurang tepat.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sangat menguasai materi;
+                                            jawaban selalu tepat dan disertai contoh nyata.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Menguasai materi; sebagian
+                                            besar jawaban tepat.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kurang menguasai materi;
+                                            jawaban sering kurang tepat.</td>
                                         <td class="px-3 py-3 text-sm leading-6 text-slate-600">Tidak menguasai materi.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">7</td>
-                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Kejelasan penyampaian</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Penyampaian selalu jelas, sistematis, dan mudah dipahami.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Umumnya jelas; sesekali perlu pengulangan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sering kurang jelas atau tidak sistematis.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Penyampaian tidak jelas dan sulit dipahami.</td>
+                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Kejelasan penyampaian
+                                        </td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Penyampaian selalu jelas,
+                                            sistematis, dan mudah dipahami.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Umumnya jelas; sesekali perlu
+                                            pengulangan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sering kurang jelas atau
+                                            tidak sistematis.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Penyampaian tidak jelas dan
+                                            sulit dipahami.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">8</td>
                                         <td class="px-3 py-3 text-sm font-semibold text-slate-700">Metode dan media</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Metode dan media bervariasi dan membuat saya terlibat aktif sepanjang kegiatan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sebagian besar metode dan media membuat saya terlibat.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Metode kurang bervariasi; keterlibatan saya rendah.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Metode monoton dan tidak melibatkan peserta.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Metode dan media bervariasi
+                                            dan membuat saya terlibat aktif sepanjang kegiatan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sebagian besar metode dan
+                                            media membuat saya terlibat.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Metode kurang bervariasi;
+                                            keterlibatan saya rendah.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Metode monoton dan tidak
+                                            melibatkan peserta.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">9</td>
-                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Interaksi dan umpan balik</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Selalu terbuka terhadap pertanyaan, mendorong diskusi, dan memberi umpan balik bermakna.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Umumnya terbuka terhadap pertanyaan dan memberi umpan balik.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kurang responsif terhadap pertanyaan dan diskusi.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Tidak responsif terhadap pertanyaan peserta.</td>
+                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Interaksi dan umpan balik
+                                        </td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Selalu terbuka terhadap
+                                            pertanyaan, mendorong diskusi, dan memberi umpan balik bermakna.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Umumnya terbuka terhadap
+                                            pertanyaan dan memberi umpan balik.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kurang responsif terhadap
+                                            pertanyaan dan diskusi.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Tidak responsif terhadap
+                                            pertanyaan peserta.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">10</td>
-                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Sikap dan pengelolaan waktu</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sangat ramah dan santun; waktu dikelola tepat sesuai porsi materi.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Ramah dan santun; waktu umumnya terkelola baik.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kurang ramah atau kurang disiplin waktu.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Tidak ramah dan tidak disiplin waktu.</td>
+                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Sikap dan pengelolaan
+                                            waktu</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sangat ramah dan santun;
+                                            waktu dikelola tepat sesuai porsi materi.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Ramah dan santun; waktu
+                                            umumnya terkelola baik.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kurang ramah atau kurang
+                                            disiplin waktu.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Tidak ramah dan tidak
+                                            disiplin waktu.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">11</td>
                                         <td class="px-3 py-3 text-sm font-semibold text-slate-700">Informasi kegiatan</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Informasi (undangan, jadwal, bahan) lengkap, jelas, dan selalu tepat waktu.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Informasi lengkap dan jelas; sesekali terlambat.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Informasi kurang lengkap atau kurang jelas.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Informasi tidak jelas atau tidak saya terima.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Informasi (undangan, jadwal,
+                                            bahan) lengkap, jelas, dan selalu tepat waktu.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Informasi lengkap dan jelas;
+                                            sesekali terlambat.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Informasi kurang lengkap atau
+                                            kurang jelas.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Informasi tidak jelas atau
+                                            tidak saya terima.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">12</td>
-                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Alokasi waktu dan jadwal</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Alokasi waktu sangat memadai dan jadwal selalu ditaati.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Alokasi waktu memadai; ada sedikit penyesuaian jadwal.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Alokasi waktu kurang memadai; jadwal sering bergeser.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Alokasi waktu tidak memadai dan jadwal tidak terkendali.</td>
+                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Alokasi waktu dan jadwal
+                                        </td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Alokasi waktu sangat memadai
+                                            dan jadwal selalu ditaati.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Alokasi waktu memadai; ada
+                                            sedikit penyesuaian jadwal.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Alokasi waktu kurang memadai;
+                                            jadwal sering bergeser.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Alokasi waktu tidak memadai
+                                            dan jadwal tidak terkendali.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">13</td>
-                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Tempat, sarana, dan konsumsi</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Seluruhnya sangat mendukung kelancaran kegiatan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mendukung kegiatan dengan sedikit kekurangan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kurang mendukung kelancaran kegiatan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Tidak mendukung kegiatan.</td>
+                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Tempat, sarana, dan
+                                            konsumsi</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Seluruhnya sangat mendukung
+                                            kelancaran kegiatan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mendukung kegiatan dengan
+                                            sedikit kekurangan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kurang mendukung kelancaran
+                                            kegiatan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Tidak mendukung kegiatan.
+                                        </td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">14</td>
                                         <td class="px-3 py-3 text-sm font-semibold text-slate-700">Pelayanan panitia</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Panitia selalu ramah, sigap, dan membantu kebutuhan peserta.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Panitia umumnya ramah dan membantu.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Panitia kurang tanggap terhadap kebutuhan peserta.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Panitia tidak melayani dengan baik.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Panitia selalu ramah, sigap,
+                                            dan membantu kebutuhan peserta.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Panitia umumnya ramah dan
+                                            membantu.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Panitia kurang tanggap
+                                            terhadap kebutuhan peserta.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Panitia tidak melayani dengan
+                                            baik.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">15</td>
                                         <td class="px-3 py-3 text-sm font-semibold text-slate-700">Kepuasan umum</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sangat puas dan bersedia merekomendasikan pelatihan kepada rekan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Puas terhadap penyelenggaraan pelatihan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kurang puas; banyak hal perlu diperbaiki.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Tidak puas terhadap penyelenggaraan pelatihan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sangat puas dan bersedia
+                                            merekomendasikan pelatihan kepada rekan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Puas terhadap penyelenggaraan
+                                            pelatihan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kurang puas; banyak hal perlu
+                                            diperbaiki.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Tidak puas terhadap
+                                            penyelenggaraan pelatihan.</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -792,7 +872,7 @@
                 </details>
             </section>
 
-            <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+           <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm" data-level-section="2">
                 <div class="border-b border-slate-100 bg-slate-50 px-5 py-4 sm:px-6">
                     <h2 class="text-lg font-bold text-slate-800">Level II — Belajar</h2>
                     <p class="mt-1 text-sm text-slate-500">Pengetahuan, keterampilan, dan sikap yang diperoleh melalui
@@ -1245,7 +1325,8 @@
                             </svg>
                             <div class="min-w-0">
                                 <h3 class="text-sm font-bold text-slate-800">Rubrik Penilaian Level II — Belajar</h3>
-                                <p class="mt-0.5 text-xs leading-5 text-slate-500">Makna skor 1–4 untuk setiap indikator pada Level II (Belajar). Klik untuk melihat atau menyembunyikan.</p>
+                                <p class="mt-0.5 text-xs leading-5 text-slate-500">Makna skor 1–4 untuk setiap indikator
+                                    pada Level II (Belajar). Klik untuk melihat atau menyembunyikan.</p>
                             </div>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg"
@@ -1260,158 +1341,297 @@
                             <table class="w-full min-w-[960px] border-collapse text-left">
                                 <thead class="bg-slate-100">
                                     <tr>
-                                        <th class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 w-12 text-center">No</th>
-                                        <th class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 w-44">Indikator</th>
-                                        <th class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">Skor 4 (Sangat Baik)</th>
-                                        <th class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">Skor 3 (Baik)</th>
-                                        <th class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">Skor 2 (Cukup)</th>
-                                        <th class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">Skor 1 (Kurang)</th>
+                                        <th
+                                            class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 w-12 text-center">
+                                            No</th>
+                                        <th
+                                            class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 w-44">
+                                            Indikator</th>
+                                        <th
+                                            class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">
+                                            Skor 4 (Sangat Baik)</th>
+                                        <th
+                                            class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">
+                                            Skor 3 (Baik)</th>
+                                        <th
+                                            class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">
+                                            Skor 2 (Cukup)</th>
+                                        <th
+                                            class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">
+                                            Skor 1 (Kurang)</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">16</td>
-                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Pengelolaan data – Pengetahuan</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu menjelaskan jenis data sekolah dan alur pengelolaannya secara lengkap dan benar disertai contoh.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu menjelaskan sebagian besar jenis data sekolah dan alur pengelolaannya dengan benar.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Baru memahami sebagian kecil jenis data sekolah dan alur pengelolaannya; masih memerlukan bimbingan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum memahami jenis data sekolah dan alur pengelolaannya.</td>
+                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Pengelolaan data –
+                                            Pengetahuan</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu menjelaskan jenis data
+                                            sekolah dan alur pengelolaannya secara lengkap dan benar disertai contoh.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu menjelaskan sebagian
+                                            besar jenis data sekolah dan alur pengelolaannya dengan benar.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Baru memahami sebagian kecil
+                                            jenis data sekolah dan alur pengelolaannya; masih memerlukan bimbingan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum memahami jenis data
+                                            sekolah dan alur pengelolaannya.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">17</td>
-                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Pengelolaan data – Keterampilan</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu mempraktikkan input, verifikasi, dan pemutakhiran data sekolah sesuai ketentuan secara mandiri, tepat, dan sesuai ketentuan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu mempraktikkan input, verifikasi, dan pemutakhiran data sekolah sesuai ketentuan sesuai ketentuan dengan sedikit bantuan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Baru mampu mempraktikkan sebagian langkah input, verifikasi, dan pemutakhiran data sekolah sesuai ketentuan; masih memerlukan bantuan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum mampu mempraktikkan input, verifikasi, dan pemutakhiran data sekolah sesuai ketentuan.</td>
+                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Pengelolaan data –
+                                            Keterampilan</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu mempraktikkan input,
+                                            verifikasi, dan pemutakhiran data sekolah sesuai ketentuan secara mandiri,
+                                            tepat, dan sesuai ketentuan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu mempraktikkan input,
+                                            verifikasi, dan pemutakhiran data sekolah sesuai ketentuan sesuai ketentuan
+                                            dengan sedikit bantuan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Baru mampu mempraktikkan
+                                            sebagian langkah input, verifikasi, dan pemutakhiran data sekolah sesuai
+                                            ketentuan; masih memerlukan bantuan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum mampu mempraktikkan
+                                            input, verifikasi, dan pemutakhiran data sekolah sesuai ketentuan.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">18</td>
-                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Pengelolaan data – Sikap</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Selalu menunjukkan ketelitian dan tanggung jawab dalam menjaga keakuratan data dalam bekerja.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sering menunjukkan ketelitian dan tanggung jawab dalam menjaga keakuratan data dalam bekerja.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kadang-kadang menunjukkan ketelitian dan tanggung jawab dalam menjaga keakuratan data; belum konsisten.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum menunjukkan ketelitian dan tanggung jawab dalam menjaga keakuratan data.</td>
+                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Pengelolaan data – Sikap
+                                        </td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Selalu menunjukkan ketelitian
+                                            dan tanggung jawab dalam menjaga keakuratan data dalam bekerja.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sering menunjukkan ketelitian
+                                            dan tanggung jawab dalam menjaga keakuratan data dalam bekerja.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kadang-kadang menunjukkan
+                                            ketelitian dan tanggung jawab dalam menjaga keakuratan data; belum konsisten.
+                                        </td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum menunjukkan ketelitian
+                                            dan tanggung jawab dalam menjaga keakuratan data.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">19</td>
-                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Layanan administrasi – Pengetahuan</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu menjelaskan prosedur persuratan, pengarsipan, dan pelayanan warga sekolah secara lengkap dan benar disertai contoh.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu menjelaskan sebagian besar prosedur persuratan, pengarsipan, dan pelayanan warga sekolah dengan benar.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Baru memahami sebagian kecil prosedur persuratan, pengarsipan, dan pelayanan warga sekolah; masih memerlukan bimbingan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum memahami prosedur persuratan, pengarsipan, dan pelayanan warga sekolah.</td>
+                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Layanan administrasi –
+                                            Pengetahuan</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu menjelaskan prosedur
+                                            persuratan, pengarsipan, dan pelayanan warga sekolah secara lengkap dan benar
+                                            disertai contoh.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu menjelaskan sebagian
+                                            besar prosedur persuratan, pengarsipan, dan pelayanan warga sekolah dengan
+                                            benar.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Baru memahami sebagian kecil
+                                            prosedur persuratan, pengarsipan, dan pelayanan warga sekolah; masih memerlukan
+                                            bimbingan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum memahami prosedur
+                                            persuratan, pengarsipan, dan pelayanan warga sekolah.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">20</td>
-                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Layanan administrasi – Keterampilan</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu mempraktikkan penyusunan surat, pengelolaan arsip, dan pelayanan sesuai prosedur secara mandiri, tepat, dan sesuai ketentuan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu mempraktikkan penyusunan surat, pengelolaan arsip, dan pelayanan sesuai prosedur sesuai ketentuan dengan sedikit bantuan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Baru mampu mempraktikkan sebagian langkah penyusunan surat, pengelolaan arsip, dan pelayanan sesuai prosedur; masih memerlukan bantuan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum mampu mempraktikkan penyusunan surat, pengelolaan arsip, dan pelayanan sesuai prosedur.</td>
+                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Layanan administrasi –
+                                            Keterampilan</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu mempraktikkan
+                                            penyusunan surat, pengelolaan arsip, dan pelayanan sesuai prosedur secara
+                                            mandiri, tepat, dan sesuai ketentuan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu mempraktikkan
+                                            penyusunan surat, pengelolaan arsip, dan pelayanan sesuai prosedur sesuai
+                                            ketentuan dengan sedikit bantuan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Baru mampu mempraktikkan
+                                            sebagian langkah penyusunan surat, pengelolaan arsip, dan pelayanan sesuai
+                                            prosedur; masih memerlukan bantuan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum mampu mempraktikkan
+                                            penyusunan surat, pengelolaan arsip, dan pelayanan sesuai prosedur.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">21</td>
-                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Layanan administrasi – Sikap</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Selalu menunjukkan keramahan, ketertiban, dan ketanggapan dalam melayani dalam bekerja.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sering menunjukkan keramahan, ketertiban, dan ketanggapan dalam melayani dalam bekerja.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kadang-kadang menunjukkan keramahan, ketertiban, dan ketanggapan dalam melayani; belum konsisten.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum menunjukkan keramahan, ketertiban, dan ketanggapan dalam melayani.</td>
+                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Layanan administrasi –
+                                            Sikap</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Selalu menunjukkan keramahan,
+                                            ketertiban, dan ketanggapan dalam melayani dalam bekerja.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sering menunjukkan keramahan,
+                                            ketertiban, dan ketanggapan dalam melayani dalam bekerja.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kadang-kadang menunjukkan
+                                            keramahan, ketertiban, dan ketanggapan dalam melayani; belum konsisten.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum menunjukkan keramahan,
+                                            ketertiban, dan ketanggapan dalam melayani.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">22</td>
-                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Administrasi keuangan – Pengetahuan</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu menjelaskan ketentuan administrasi keuangan dan pelaporan sekolah secara lengkap dan benar disertai contoh.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu menjelaskan sebagian besar ketentuan administrasi keuangan dan pelaporan sekolah dengan benar.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Baru memahami sebagian kecil ketentuan administrasi keuangan dan pelaporan sekolah; masih memerlukan bimbingan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum memahami ketentuan administrasi keuangan dan pelaporan sekolah.</td>
+                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Administrasi keuangan –
+                                            Pengetahuan</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu menjelaskan ketentuan
+                                            administrasi keuangan dan pelaporan sekolah secara lengkap dan benar disertai
+                                            contoh.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu menjelaskan sebagian
+                                            besar ketentuan administrasi keuangan dan pelaporan sekolah dengan benar.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Baru memahami sebagian kecil
+                                            ketentuan administrasi keuangan dan pelaporan sekolah; masih memerlukan
+                                            bimbingan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum memahami ketentuan
+                                            administrasi keuangan dan pelaporan sekolah.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">23</td>
-                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Administrasi keuangan – Keterampilan</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu mempraktikkan penyusunan pembukuan, bukti transaksi, dan laporan keuangan secara mandiri, tepat, dan sesuai ketentuan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu mempraktikkan penyusunan pembukuan, bukti transaksi, dan laporan keuangan sesuai ketentuan dengan sedikit bantuan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Baru mampu mempraktikkan sebagian langkah penyusunan pembukuan, bukti transaksi, dan laporan keuangan; masih memerlukan bantuan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum mampu mempraktikkan penyusunan pembukuan, bukti transaksi, dan laporan keuangan.</td>
+                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Administrasi keuangan –
+                                            Keterampilan</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu mempraktikkan
+                                            penyusunan pembukuan, bukti transaksi, dan laporan keuangan secara mandiri,
+                                            tepat, dan sesuai ketentuan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu mempraktikkan
+                                            penyusunan pembukuan, bukti transaksi, dan laporan keuangan sesuai ketentuan
+                                            dengan sedikit bantuan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Baru mampu mempraktikkan
+                                            sebagian langkah penyusunan pembukuan, bukti transaksi, dan laporan keuangan;
+                                            masih memerlukan bantuan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum mampu mempraktikkan
+                                            penyusunan pembukuan, bukti transaksi, dan laporan keuangan.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">24</td>
-                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Administrasi keuangan – Sikap</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Selalu menunjukkan kejujuran, transparansi, dan akuntabilitas dalam administrasi keuangan dalam bekerja.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sering menunjukkan kejujuran, transparansi, dan akuntabilitas dalam administrasi keuangan dalam bekerja.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kadang-kadang menunjukkan kejujuran, transparansi, dan akuntabilitas dalam administrasi keuangan; belum konsisten.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum menunjukkan kejujuran, transparansi, dan akuntabilitas dalam administrasi keuangan.</td>
+                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Administrasi keuangan –
+                                            Sikap</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Selalu menunjukkan kejujuran,
+                                            transparansi, dan akuntabilitas dalam administrasi keuangan dalam bekerja.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sering menunjukkan kejujuran,
+                                            transparansi, dan akuntabilitas dalam administrasi keuangan dalam bekerja.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kadang-kadang menunjukkan
+                                            kejujuran, transparansi, dan akuntabilitas dalam administrasi keuangan; belum
+                                            konsisten.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum menunjukkan kejujuran,
+                                            transparansi, dan akuntabilitas dalam administrasi keuangan.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">25</td>
-                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Kolaborasi dan jejaring – Pengetahuan</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu menjelaskan peran dan manfaat kolaborasi serta jejaring kerja secara lengkap dan benar disertai contoh.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu menjelaskan sebagian besar peran dan manfaat kolaborasi serta jejaring kerja dengan benar.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Baru memahami sebagian kecil peran dan manfaat kolaborasi serta jejaring kerja; masih memerlukan bimbingan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum memahami peran dan manfaat kolaborasi serta jejaring kerja.</td>
+                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Kolaborasi dan jejaring –
+                                            Pengetahuan</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu menjelaskan peran dan
+                                            manfaat kolaborasi serta jejaring kerja secara lengkap dan benar disertai
+                                            contoh.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu menjelaskan sebagian
+                                            besar peran dan manfaat kolaborasi serta jejaring kerja dengan benar.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Baru memahami sebagian kecil
+                                            peran dan manfaat kolaborasi serta jejaring kerja; masih memerlukan bimbingan.
+                                        </td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum memahami peran dan
+                                            manfaat kolaborasi serta jejaring kerja.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">26</td>
-                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Kolaborasi dan jejaring – Keterampilan</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu mempraktikkan komunikasi, koordinasi, dan pembangunan jejaring kerja secara mandiri, tepat, dan sesuai ketentuan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu mempraktikkan komunikasi, koordinasi, dan pembangunan jejaring kerja sesuai ketentuan dengan sedikit bantuan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Baru mampu mempraktikkan sebagian langkah komunikasi, koordinasi, dan pembangunan jejaring kerja; masih memerlukan bantuan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum mampu mempraktikkan komunikasi, koordinasi, dan pembangunan jejaring kerja.</td>
+                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Kolaborasi dan jejaring –
+                                            Keterampilan</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu mempraktikkan
+                                            komunikasi, koordinasi, dan pembangunan jejaring kerja secara mandiri, tepat,
+                                            dan sesuai ketentuan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu mempraktikkan
+                                            komunikasi, koordinasi, dan pembangunan jejaring kerja sesuai ketentuan dengan
+                                            sedikit bantuan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Baru mampu mempraktikkan
+                                            sebagian langkah komunikasi, koordinasi, dan pembangunan jejaring kerja; masih
+                                            memerlukan bantuan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum mampu mempraktikkan
+                                            komunikasi, koordinasi, dan pembangunan jejaring kerja.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">27</td>
-                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Kolaborasi dan jejaring – Sikap</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Selalu menunjukkan keterbukaan, sikap menghargai, dan kemauan bekerja sama dalam bekerja.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sering menunjukkan keterbukaan, sikap menghargai, dan kemauan bekerja sama dalam bekerja.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kadang-kadang menunjukkan keterbukaan, sikap menghargai, dan kemauan bekerja sama; belum konsisten.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum menunjukkan keterbukaan, sikap menghargai, dan kemauan bekerja sama.</td>
+                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Kolaborasi dan jejaring –
+                                            Sikap</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Selalu menunjukkan
+                                            keterbukaan, sikap menghargai, dan kemauan bekerja sama dalam bekerja.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sering menunjukkan
+                                            keterbukaan, sikap menghargai, dan kemauan bekerja sama dalam bekerja.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kadang-kadang menunjukkan
+                                            keterbukaan, sikap menghargai, dan kemauan bekerja sama; belum konsisten.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum menunjukkan
+                                            keterbukaan, sikap menghargai, dan kemauan bekerja sama.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">28</td>
-                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Growth mindset – Pengetahuan</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu menjelaskan konsep growth mindset dan perbedaannya dengan fixed mindset secara lengkap dan benar disertai contoh.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu menjelaskan sebagian besar konsep growth mindset dan perbedaannya dengan fixed mindset dengan benar.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Baru memahami sebagian kecil konsep growth mindset dan perbedaannya dengan fixed mindset; masih memerlukan bimbingan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum memahami konsep growth mindset dan perbedaannya dengan fixed mindset.</td>
+                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Growth mindset –
+                                            Pengetahuan</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu menjelaskan konsep
+                                            growth mindset dan perbedaannya dengan fixed mindset secara lengkap dan benar
+                                            disertai contoh.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu menjelaskan sebagian
+                                            besar konsep growth mindset dan perbedaannya dengan fixed mindset dengan benar.
+                                        </td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Baru memahami sebagian kecil
+                                            konsep growth mindset dan perbedaannya dengan fixed mindset; masih memerlukan
+                                            bimbingan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum memahami konsep growth
+                                            mindset dan perbedaannya dengan fixed mindset.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">29</td>
-                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Growth mindset – Keterampilan</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu mempraktikkan perumusan tujuan pengembangan diri dan strategi menghadapi tantangan secara mandiri, tepat, dan sesuai ketentuan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu mempraktikkan perumusan tujuan pengembangan diri dan strategi menghadapi tantangan sesuai ketentuan dengan sedikit bantuan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Baru mampu mempraktikkan sebagian langkah perumusan tujuan pengembangan diri dan strategi menghadapi tantangan; masih memerlukan bantuan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum mampu mempraktikkan perumusan tujuan pengembangan diri dan strategi menghadapi tantangan.</td>
+                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Growth mindset –
+                                            Keterampilan</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu mempraktikkan perumusan
+                                            tujuan pengembangan diri dan strategi menghadapi tantangan secara mandiri,
+                                            tepat, dan sesuai ketentuan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu mempraktikkan perumusan
+                                            tujuan pengembangan diri dan strategi menghadapi tantangan sesuai ketentuan
+                                            dengan sedikit bantuan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Baru mampu mempraktikkan
+                                            sebagian langkah perumusan tujuan pengembangan diri dan strategi menghadapi
+                                            tantangan; masih memerlukan bantuan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum mampu mempraktikkan
+                                            perumusan tujuan pengembangan diri dan strategi menghadapi tantangan.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">30</td>
-                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Growth mindset – Sikap</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Selalu menunjukkan pandangan terhadap tantangan dan kesalahan sebagai peluang belajar dalam bekerja.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sering menunjukkan pandangan terhadap tantangan dan kesalahan sebagai peluang belajar dalam bekerja.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kadang-kadang menunjukkan pandangan terhadap tantangan dan kesalahan sebagai peluang belajar; belum konsisten.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum menunjukkan pandangan terhadap tantangan dan kesalahan sebagai peluang belajar.</td>
+                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Growth mindset – Sikap
+                                        </td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Selalu menunjukkan pandangan
+                                            terhadap tantangan dan kesalahan sebagai peluang belajar dalam bekerja.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sering menunjukkan pandangan
+                                            terhadap tantangan dan kesalahan sebagai peluang belajar dalam bekerja.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kadang-kadang menunjukkan
+                                            pandangan terhadap tantangan dan kesalahan sebagai peluang belajar; belum
+                                            konsisten.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum menunjukkan pandangan
+                                            terhadap tantangan dan kesalahan sebagai peluang belajar.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">31</td>
-                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Profesionalisme – Pengetahuan</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu menjelaskan peran, etika, dan standar kinerja tenaga kependidikan secara lengkap dan benar disertai contoh.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu menjelaskan sebagian besar peran, etika, dan standar kinerja tenaga kependidikan dengan benar.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Baru memahami sebagian kecil peran, etika, dan standar kinerja tenaga kependidikan; masih memerlukan bimbingan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum memahami peran, etika, dan standar kinerja tenaga kependidikan.</td>
+                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Profesionalisme –
+                                            Pengetahuan</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu menjelaskan peran,
+                                            etika, dan standar kinerja tenaga kependidikan secara lengkap dan benar disertai
+                                            contoh.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu menjelaskan sebagian
+                                            besar peran, etika, dan standar kinerja tenaga kependidikan dengan benar.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Baru memahami sebagian kecil
+                                            peran, etika, dan standar kinerja tenaga kependidikan; masih memerlukan
+                                            bimbingan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum memahami peran, etika,
+                                            dan standar kinerja tenaga kependidikan.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">32</td>
-                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Profesionalisme – Keterampilan</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu mempraktikkan pengaturan waktu, prioritas kerja, dan pemanfaatan teknologi secara profesional secara mandiri, tepat, dan sesuai ketentuan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu mempraktikkan pengaturan waktu, prioritas kerja, dan pemanfaatan teknologi secara profesional sesuai ketentuan dengan sedikit bantuan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Baru mampu mempraktikkan sebagian langkah pengaturan waktu, prioritas kerja, dan pemanfaatan teknologi secara profesional; masih memerlukan bantuan.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum mampu mempraktikkan pengaturan waktu, prioritas kerja, dan pemanfaatan teknologi secara profesional.</td>
+                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Profesionalisme –
+                                            Keterampilan</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu mempraktikkan
+                                            pengaturan waktu, prioritas kerja, dan pemanfaatan teknologi secara profesional
+                                            secara mandiri, tepat, dan sesuai ketentuan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mampu mempraktikkan
+                                            pengaturan waktu, prioritas kerja, dan pemanfaatan teknologi secara profesional
+                                            sesuai ketentuan dengan sedikit bantuan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Baru mampu mempraktikkan
+                                            sebagian langkah pengaturan waktu, prioritas kerja, dan pemanfaatan teknologi
+                                            secara profesional; masih memerlukan bantuan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum mampu mempraktikkan
+                                            pengaturan waktu, prioritas kerja, dan pemanfaatan teknologi secara profesional.
+                                        </td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">33</td>
-                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Profesionalisme – Sikap</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Selalu menunjukkan komitmen pada integritas, disiplin, tanggung jawab, dan kerahasiaan data dalam bekerja.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sering menunjukkan komitmen pada integritas, disiplin, tanggung jawab, dan kerahasiaan data dalam bekerja.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kadang-kadang menunjukkan komitmen pada integritas, disiplin, tanggung jawab, dan kerahasiaan data; belum konsisten.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum menunjukkan komitmen pada integritas, disiplin, tanggung jawab, dan kerahasiaan data.</td>
+                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Profesionalisme – Sikap
+                                        </td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Selalu menunjukkan komitmen
+                                            pada integritas, disiplin, tanggung jawab, dan kerahasiaan data dalam bekerja.
+                                        </td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sering menunjukkan komitmen
+                                            pada integritas, disiplin, tanggung jawab, dan kerahasiaan data dalam bekerja.
+                                        </td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kadang-kadang menunjukkan
+                                            komitmen pada integritas, disiplin, tanggung jawab, dan kerahasiaan data; belum
+                                            konsisten.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum menunjukkan komitmen
+                                            pada integritas, disiplin, tanggung jawab, dan kerahasiaan data.</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1420,7 +1640,7 @@
                 </details>
             </section>
 
-            <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm" data-level-section="3">
                 <div class="border-b border-slate-100 bg-slate-50 px-5 py-4 sm:px-6">
                     <h2 class="text-lg font-bold text-slate-800">Level III — Perilaku</h2>
                     <p class="mt-1 text-sm text-slate-500">Penerapan hasil pelatihan dalam pelaksanaan tugas di sekolah.</p>
@@ -1574,7 +1794,8 @@
                             </svg>
                             <div class="min-w-0">
                                 <h3 class="text-sm font-bold text-slate-800">Rubrik Penilaian Level III — Perilaku</h3>
-                                <p class="mt-0.5 text-xs leading-5 text-slate-500">Makna skor 1-4 untuk setiap indikator pada Level III (Perilaku). Klik untuk melihat atau menyembunyikan.</p>
+                                <p class="mt-0.5 text-xs leading-5 text-slate-500">Makna skor 1-4 untuk setiap indikator
+                                    pada Level III (Perilaku). Klik untuk melihat atau menyembunyikan.</p>
                             </div>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg"
@@ -1589,54 +1810,103 @@
                             <table class="w-full min-w-[960px] border-collapse text-left">
                                 <thead class="bg-slate-100">
                                     <tr>
-                                        <th class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 w-12 text-center">No</th>
-                                        <th class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 w-44">Indikator</th>
-                                        <th class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">Skor 4 (Sangat Baik)</th>
-                                        <th class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">Skor 3 (Baik)</th>
-                                        <th class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">Skor 2 (Cukup)</th>
-                                        <th class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">Skor 1 (Kurang)</th>
+                                        <th
+                                            class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 w-12 text-center">
+                                            No</th>
+                                        <th
+                                            class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 w-44">
+                                            Indikator</th>
+                                        <th
+                                            class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">
+                                            Skor 4 (Sangat Baik)</th>
+                                        <th
+                                            class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">
+                                            Skor 3 (Baik)</th>
+                                        <th
+                                            class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">
+                                            Skor 2 (Cukup)</th>
+                                        <th
+                                            class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">
+                                            Skor 1 (Kurang)</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">34</td>
                                         <td class="px-3 py-3 text-sm font-semibold text-slate-700">Pengelolaan data</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Selalu memperbarui dan memverifikasi data sekolah secara berkala dan telah menjadi kebiasaan kerja.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sering memperbarui dan memverifikasi data sekolah secara berkala; sesekali masih terlewat.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kadang-kadang memperbarui dan memverifikasi data sekolah secara berkala; belum konsisten.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum memperbarui dan memverifikasi data sekolah secara berkala setelah mengikuti pelatihan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Selalu memperbarui dan
+                                            memverifikasi data sekolah secara berkala dan telah menjadi kebiasaan kerja.
+                                        </td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sering memperbarui dan
+                                            memverifikasi data sekolah secara berkala; sesekali masih terlewat.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kadang-kadang memperbarui dan
+                                            memverifikasi data sekolah secara berkala; belum konsisten.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum memperbarui dan
+                                            memverifikasi data sekolah secara berkala setelah mengikuti pelatihan.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">35</td>
                                         <td class="px-3 py-3 text-sm font-semibold text-slate-700">Layanan administrasi</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Selalu melayani kebutuhan administrasi warga sekolah dengan cepat, tertib, dan ramah dan telah menjadi kebiasaan kerja.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sering melayani kebutuhan administrasi warga sekolah dengan cepat, tertib, dan ramah; sesekali masih terlewat.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kadang-kadang melayani kebutuhan administrasi warga sekolah dengan cepat, tertib, dan ramah; belum konsisten.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum melayani kebutuhan administrasi warga sekolah dengan cepat, tertib, dan ramah setelah mengikuti pelatihan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Selalu melayani kebutuhan
+                                            administrasi warga sekolah dengan cepat, tertib, dan ramah dan telah menjadi
+                                            kebiasaan kerja.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sering melayani kebutuhan
+                                            administrasi warga sekolah dengan cepat, tertib, dan ramah; sesekali masih
+                                            terlewat.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kadang-kadang melayani
+                                            kebutuhan administrasi warga sekolah dengan cepat, tertib, dan ramah; belum
+                                            konsisten.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum melayani kebutuhan
+                                            administrasi warga sekolah dengan cepat, tertib, dan ramah setelah mengikuti
+                                            pelatihan.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">36</td>
                                         <td class="px-3 py-3 text-sm font-semibold text-slate-700">Dokumen dan laporan</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Selalu menyusun dokumen administrasi dan laporan tepat waktu dan sesuai format dan telah menjadi kebiasaan kerja.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sering menyusun dokumen administrasi dan laporan tepat waktu dan sesuai format; sesekali masih terlewat.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kadang-kadang menyusun dokumen administrasi dan laporan tepat waktu dan sesuai format; belum konsisten.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum menyusun dokumen administrasi dan laporan tepat waktu dan sesuai format setelah mengikuti pelatihan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Selalu menyusun dokumen
+                                            administrasi dan laporan tepat waktu dan sesuai format dan telah menjadi
+                                            kebiasaan kerja.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sering menyusun dokumen
+                                            administrasi dan laporan tepat waktu dan sesuai format; sesekali masih terlewat.
+                                        </td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kadang-kadang menyusun
+                                            dokumen administrasi dan laporan tepat waktu dan sesuai format; belum konsisten.
+                                        </td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum menyusun dokumen
+                                            administrasi dan laporan tepat waktu dan sesuai format setelah mengikuti
+                                            pelatihan.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">37</td>
                                         <td class="px-3 py-3 text-sm font-semibold text-slate-700">Kolaborasi</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Selalu berkolaborasi aktif dengan kepala sekolah, guru, rekan, dan pihak luar dan telah menjadi kebiasaan kerja.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sering berkolaborasi aktif dengan kepala sekolah, guru, rekan, dan pihak luar; sesekali masih terlewat.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kadang-kadang berkolaborasi aktif dengan kepala sekolah, guru, rekan, dan pihak luar; belum konsisten.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum berkolaborasi aktif dengan kepala sekolah, guru, rekan, dan pihak luar setelah mengikuti pelatihan.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Selalu berkolaborasi aktif
+                                            dengan kepala sekolah, guru, rekan, dan pihak luar dan telah menjadi kebiasaan
+                                            kerja.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sering berkolaborasi aktif
+                                            dengan kepala sekolah, guru, rekan, dan pihak luar; sesekali masih terlewat.
+                                        </td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kadang-kadang berkolaborasi
+                                            aktif dengan kepala sekolah, guru, rekan, dan pihak luar; belum konsisten.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum berkolaborasi aktif
+                                            dengan kepala sekolah, guru, rekan, dan pihak luar setelah mengikuti pelatihan.
+                                        </td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">38</td>
-                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Teknologi dan keamanan data</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Selalu memanfaatkan teknologi dan menjaga keamanan serta kerahasiaan data sekolah dan telah menjadi kebiasaan kerja.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sering memanfaatkan teknologi dan menjaga keamanan serta kerahasiaan data sekolah; sesekali masih terlewat.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kadang-kadang memanfaatkan teknologi dan menjaga keamanan serta kerahasiaan data sekolah; belum konsisten.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum memanfaatkan teknologi dan menjaga keamanan serta kerahasiaan data sekolah setelah mengikuti pelatihan.</td>
+                                        <td class="px-3 py-3 text-sm font-semibold text-slate-700">Teknologi dan keamanan
+                                            data</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Selalu memanfaatkan teknologi
+                                            dan menjaga keamanan serta kerahasiaan data sekolah dan telah menjadi kebiasaan
+                                            kerja.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Sering memanfaatkan teknologi
+                                            dan menjaga keamanan serta kerahasiaan data sekolah; sesekali masih terlewat.
+                                        </td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kadang-kadang memanfaatkan
+                                            teknologi dan menjaga keamanan serta kerahasiaan data sekolah; belum konsisten.
+                                        </td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Belum memanfaatkan teknologi
+                                            dan menjaga keamanan serta kerahasiaan data sekolah setelah mengikuti pelatihan.
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1645,7 +1915,7 @@
                 </details>
             </section>
 
-            <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm" data-level-section="4">
                 <div class="border-b border-slate-100 bg-slate-50 px-5 py-4 sm:px-6">
                     <h2 class="text-lg font-bold text-slate-800">Level IV — Hasil</h2>
                     <p class="mt-1 text-sm text-slate-500">Dampak pelatihan terhadap layanan dan kinerja sekolah.</p>
@@ -1798,7 +2068,8 @@
                             </svg>
                             <div class="min-w-0">
                                 <h3 class="text-sm font-bold text-slate-800">Rubrik Penilaian Level IV — Hasil</h3>
-                                <p class="mt-0.5 text-xs leading-5 text-slate-500">Makna skor 1–4 untuk setiap indikator pada Level IV (Hasil). Klik untuk melihat atau menyembunyikan.</p>
+                                <p class="mt-0.5 text-xs leading-5 text-slate-500">Makna skor 1–4 untuk setiap indikator
+                                    pada Level IV (Hasil). Klik untuk melihat atau menyembunyikan.</p>
                             </div>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg"
@@ -1813,54 +2084,94 @@
                             <table class="w-full min-w-[960px] border-collapse text-left">
                                 <thead class="bg-slate-100">
                                     <tr>
-                                        <th class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 w-12 text-center">No</th>
-                                        <th class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 w-44">Indikator</th>
-                                        <th class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">Skor 4 (Sangat Baik)</th>
-                                        <th class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">Skor 3 (Baik)</th>
-                                        <th class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">Skor 2 (Cukup)</th>
-                                        <th class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">Skor 1 (Kurang)</th>
+                                        <th
+                                            class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 w-12 text-center">
+                                            No</th>
+                                        <th
+                                            class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 w-44">
+                                            Indikator</th>
+                                        <th
+                                            class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">
+                                            Skor 4 (Sangat Baik)</th>
+                                        <th
+                                            class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">
+                                            Skor 3 (Baik)</th>
+                                        <th
+                                            class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">
+                                            Skor 2 (Cukup)</th>
+                                        <th
+                                            class="border-b border-slate-200 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-slate-500 ">
+                                            Skor 1 (Kurang)</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">39</td>
                                         <td class="px-3 py-3 text-sm font-semibold text-slate-700">Kualitas data</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Keakuratan, kelengkapan, dan kemutakhiran data sekolah meningkat sangat jelas dan didukung bukti/dokumen.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Keakuratan, kelengkapan, dan kemutakhiran data sekolah meningkat dan dapat diamati.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Keakuratan, kelengkapan, dan kemutakhiran data sekolah meningkat sedikit atau belum merata.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Keakuratan, kelengkapan, dan kemutakhiran data sekolah belum berubah atau justru menurun.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Keakuratan, kelengkapan, dan
+                                            kemutakhiran data sekolah meningkat sangat jelas dan didukung bukti/dokumen.
+                                        </td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Keakuratan, kelengkapan, dan
+                                            kemutakhiran data sekolah meningkat dan dapat diamati.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Keakuratan, kelengkapan, dan
+                                            kemutakhiran data sekolah meningkat sedikit atau belum merata.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Keakuratan, kelengkapan, dan
+                                            kemutakhiran data sekolah belum berubah atau justru menurun.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">40</td>
                                         <td class="px-3 py-3 text-sm font-semibold text-slate-700">Kecepatan layanan</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kecepatan layanan administrasi dan berkurangnya keluhan layanan meningkat sangat jelas dan didukung bukti/dokumen.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kecepatan layanan administrasi dan berkurangnya keluhan layanan meningkat dan dapat diamati.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kecepatan layanan administrasi dan berkurangnya keluhan layanan meningkat sedikit atau belum merata.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kecepatan layanan administrasi dan berkurangnya keluhan layanan belum berubah atau justru menurun.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kecepatan layanan
+                                            administrasi dan berkurangnya keluhan layanan meningkat sangat jelas dan
+                                            didukung bukti/dokumen.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kecepatan layanan
+                                            administrasi dan berkurangnya keluhan layanan meningkat dan dapat diamati.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kecepatan layanan
+                                            administrasi dan berkurangnya keluhan layanan meningkat sedikit atau belum
+                                            merata.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kecepatan layanan
+                                            administrasi dan berkurangnya keluhan layanan belum berubah atau justru menurun.
+                                        </td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">41</td>
                                         <td class="px-3 py-3 text-sm font-semibold text-slate-700">Mutu laporan</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mutu laporan administrasi dan keuangan (berkurangnya kesalahan dan temuan) meningkat sangat jelas dan didukung bukti/dokumen.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mutu laporan administrasi dan keuangan (berkurangnya kesalahan dan temuan) meningkat dan dapat diamati.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mutu laporan administrasi dan keuangan (berkurangnya kesalahan dan temuan) meningkat sedikit atau belum merata.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mutu laporan administrasi dan keuangan (berkurangnya kesalahan dan temuan) belum berubah atau justru menurun.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mutu laporan administrasi dan
+                                            keuangan (berkurangnya kesalahan dan temuan) meningkat sangat jelas dan didukung
+                                            bukti/dokumen.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mutu laporan administrasi dan
+                                            keuangan (berkurangnya kesalahan dan temuan) meningkat dan dapat diamati.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mutu laporan administrasi dan
+                                            keuangan (berkurangnya kesalahan dan temuan) meningkat sedikit atau belum
+                                            merata.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mutu laporan administrasi dan
+                                            keuangan (berkurangnya kesalahan dan temuan) belum berubah atau justru menurun.
+                                        </td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">42</td>
                                         <td class="px-3 py-3 text-sm font-semibold text-slate-700">Kerja sama tim</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kerja sama tim dan koordinasi antarwarga sekolah meningkat sangat jelas dan didukung bukti/dokumen.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kerja sama tim dan koordinasi antarwarga sekolah meningkat dan dapat diamati.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kerja sama tim dan koordinasi antarwarga sekolah meningkat sedikit atau belum merata.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kerja sama tim dan koordinasi antarwarga sekolah belum berubah atau justru menurun.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kerja sama tim dan koordinasi
+                                            antarwarga sekolah meningkat sangat jelas dan didukung bukti/dokumen.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kerja sama tim dan koordinasi
+                                            antarwarga sekolah meningkat dan dapat diamati.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kerja sama tim dan koordinasi
+                                            antarwarga sekolah meningkat sedikit atau belum merata.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Kerja sama tim dan koordinasi
+                                            antarwarga sekolah belum berubah atau justru menurun.</td>
                                     </tr>
                                     <tr class="align-top">
                                         <td class="px-3 py-3 text-center text-sm font-semibold text-slate-600">43</td>
                                         <td class="px-3 py-3 text-sm font-semibold text-slate-700">Kinerja sekolah</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mutu layanan dan kinerja sekolah secara keseluruhan meningkat sangat jelas dan didukung bukti/dokumen.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mutu layanan dan kinerja sekolah secara keseluruhan meningkat dan dapat diamati.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mutu layanan dan kinerja sekolah secara keseluruhan meningkat sedikit atau belum merata.</td>
-                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mutu layanan dan kinerja sekolah secara keseluruhan belum berubah atau justru menurun.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mutu layanan dan kinerja
+                                            sekolah secara keseluruhan meningkat sangat jelas dan didukung bukti/dokumen.
+                                        </td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mutu layanan dan kinerja
+                                            sekolah secara keseluruhan meningkat dan dapat diamati.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mutu layanan dan kinerja
+                                            sekolah secara keseluruhan meningkat sedikit atau belum merata.</td>
+                                        <td class="px-3 py-3 text-sm leading-6 text-slate-600">Mutu layanan dan kinerja
+                                            sekolah secara keseluruhan belum berubah atau justru menurun.</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1878,53 +2189,79 @@
         </form>
     </div>
 
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const jabatan = document.getElementById('jabatan_responden');
             const lainnyaWrap = document.getElementById('jabatan-lainnya-wrap');
             const lainnyaInput = document.getElementById('jabatan_lainnya');
 
-            function toggleJabatanLainnya() {
-                const tampil = jabatan.value === 'Lainnya';
-                lainnyaWrap.style.display = tampil ? 'block' : 'none';
-                lainnyaInput.required = tampil;
-                if (!tampil) {
-                    lainnyaInput.value = '';
-                }
-            }
+            const levelSections = document.querySelectorAll('[data-level-section]');
 
-            jabatan.addEventListener('change', toggleJabatanLainnya);
-            toggleJabatanLainnya();
-        });
-    </script>
+            function updateLevelJabatan() {
+                if (!jabatan) return;
 
-    {{-- =========================================================
-    JAVASCRIPT PROGRESS
-    ========================================================== --}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
+                const isTendik = jabatan.value === 'Tendik';
 
-            const totalIndikator = 43;
+                levelSections.forEach(function (section) {
+                    const level = Number(section.dataset.levelSection);
+                    const tampil = isTendik || (level === 3 || level === 4);
 
-            const progressBar = document.getElementById('tendik-progress-bar');
-            const progressPercent = document.getElementById('tendik-progress-percent');
-            const progressText = document.getElementById('tendik-progress-text');
-            const scoreText = document.getElementById('tendik-score-text');
+                    section.hidden = !tampil;
 
-            function updateTendikProgress() {
+                    section.querySelectorAll('input[type="radio"]').forEach(function (radio) {
+                        radio.disabled = !tampil;
 
-                const checked = document.querySelectorAll(
-                    'input[type="radio"][name^="jawaban_"]:checked'
-                );
-
-                const jumlahDiisi = checked.length;
-                let totalSkor = 0;
-
-                checked.forEach(function (radio) {
-                    totalSkor += Number(radio.value);
+                        if (!tampil) {
+                            radio.checked = false;
+                        }
+                    });
                 });
 
-                const persen = Math.round((jumlahDiisi / totalIndikator) * 100);
+                if (lainnyaWrap) {
+                    lainnyaWrap.style.display = 'none';
+                }
+
+                if (lainnyaInput) {
+                    lainnyaInput.required = false;
+                    lainnyaInput.value = '';
+                }
+
+                updateTendikProgress();
+            }
+
+            function updateTendikProgress() {
+                const radioAktif = Array.from(
+                    document.querySelectorAll(
+                        'input[type="radio"][name^="jawaban_"]:not(:disabled)'
+                    )
+                );
+
+                const namaIndikator = new Set(
+                    radioAktif.map(function (radio) {
+                        return radio.name;
+                    })
+                );
+
+                const totalIndikator = namaIndikator.size;
+
+                const checked = radioAktif.filter(function (radio) {
+                    return radio.checked;
+                });
+
+                const jumlahDiisi = checked.length;
+                const totalSkor = checked.reduce(function (total, radio) {
+                    return total + Number(radio.value);
+                }, 0);
+
+                const persen = totalIndikator > 0
+                    ? Math.round((jumlahDiisi / totalIndikator) * 100)
+                    : 0;
+
+                const progressBar = document.getElementById('tendik-progress-bar');
+                const progressPercent = document.getElementById('tendik-progress-percent');
+                const progressText = document.getElementById('tendik-progress-text');
+                const scoreText = document.getElementById('tendik-score-text');
 
                 if (progressBar) {
                     progressBar.style.width = persen + '%';
@@ -1935,25 +2272,31 @@
                 }
 
                 if (progressText) {
-                    progressText.textContent = jumlahDiisi + ' / ' + totalIndikator + ' butir';
+                    progressText.textContent =
+                        jumlahDiisi + ' / ' + totalIndikator + ' butir';
                 }
 
                 if (scoreText) {
                     if (jumlahDiisi === 0) {
                         scoreText.textContent = 'Belum ada penilaian';
                     } else {
-                        scoreText.textContent = totalSkor + ' / ' + (totalIndikator * 4) + ' poin';
+                        scoreText.textContent =
+                            totalSkor + ' / ' + (totalIndikator * 4) + ' poin';
                     }
                 }
             }
 
-            document
-                .querySelectorAll('input[type="radio"][name^="jawaban_"]')
-                .forEach(function (radio) {
-                    radio.addEventListener('change', updateTendikProgress);
-                });
+            document.querySelectorAll(
+                'input[type="radio"][name^="jawaban_"]'
+            ).forEach(function (radio) {
+                radio.addEventListener('change', updateTendikProgress);
+            });
 
-            updateTendikProgress();
+            if (jabatan) {
+                jabatan.addEventListener('change', updateLevelJabatan);
+            }
+
+            updateLevelJabatan();
         });
     </script>
 @endsection

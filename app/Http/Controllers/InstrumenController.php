@@ -6,11 +6,12 @@ use App\Models\Instrumen;
 use App\Models\BcksPengisian;
 use App\Models\BKSubmission;
 use App\Models\Tendik;
-
+use App\Models\GembiraPengisian;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Route;
+use App\Models\PkgsdMbiPengisian;
 
 class InstrumenController extends Controller
 {
@@ -147,8 +148,6 @@ class InstrumenController extends Controller
                 ),
             ]);
         }
-
-
         /*
         |--------------------------------------------------------------------------
         | MASUKKAN BK
@@ -163,7 +162,6 @@ class InstrumenController extends Controller
                 'jenis' => 'BK',
 
                 'instrumen' => 'Monitoring & Evaluasi BK',
-
                 /*
                 |--------------------------------------------------------------------------
                 | Untuk BK tidak ada field nama_bcks.
@@ -177,7 +175,9 @@ class InstrumenController extends Controller
 
                 'responden' => $item->nama_responden,
 
-                'status_responden' => $item->kab_kota,
+                'status_responden' => $item->jabatan_responden
+                    ?? $item->jabatan_lainnya
+                    ?? '-',
 
                 'tanggal' => $item->tanggal_pelaksanaan,
 
@@ -197,7 +197,6 @@ class InstrumenController extends Controller
                         'submission' => $item->id
                     ]
                 ),
-
                 /*
                 |----------------------------------------------------------------
                 | BK belum punya halaman edit saat ini. Tetap dicek dengan
@@ -290,12 +289,180 @@ class InstrumenController extends Controller
                 'cetak_route' => null,
             ]);
         }
+        $gembiraList = GembiraPengisian::query()
+            ->latest('tanggal_monev')
+            ->latest('id')
+            ->get();
+
+        foreach ($gembiraList as $item) {
+            $levelAktif = $item->jabatan_penilai === 'Peserta Matematika GEMBIRA'
+                ? [1, 2, 3, 4]
+                : [3, 4];
+
+            $jawabanPerLevel = [
+                1 => $item->level_1_jawaban ?? [],
+                2 => $item->level_2_jawaban ?? [],
+                3 => $item->level_3_jawaban ?? [],
+                4 => $item->level_4_jawaban ?? [],
+            ];
+
+            $totalSkor = 0;
+            $jumlahDinilai = 0;
+
+            foreach ($levelAktif as $level) {
+                foreach ($jawabanPerLevel[$level] as $jawaban) {
+                    $skor = is_array($jawaban)
+                        ? ($jawaban['skor'] ?? $jawaban['jawaban'] ?? null)
+                        : $jawaban;
+
+                    if ($skor === 'TD' || $skor === 'td') {
+                        continue;
+                    }
+
+                    if (is_numeric($skor) && (int) $skor >= 1 && (int) $skor <= 4) {
+                        $totalSkor += (int) $skor;
+                        $jumlahDinilai++;
+                    }
+                }
+            }
+
+            $rataRata = $jumlahDinilai > 0
+                ? $totalSkor / $jumlahDinilai
+                : 0;
+
+            $predikat = match (true) {
+                $jumlahDinilai === 0 => '-',
+                $rataRata >= 3.50 => 'Sangat Baik',
+                $rataRata >= 2.75 => 'Baik',
+                $rataRata >= 2.00 => 'Cukup',
+                default => 'Perlu pendampingan intensif',
+            };
+
+            $riwayat->push([
+                'id' => $item->id,
+                'jenis' => 'GEMBIRA',
+                'instrumen' => 'Matematika GEMBIRA',
+                'nama' => $item->nama_guru,
+                'unit_kerja' => $item->nama_sekolah,
+                'responden' => $item->nama_guru,
+                'status_responden' => $item->jabatan_penilai ?? '-',
+                'tanggal' => $item->tanggal_monev
+                    ? \Illuminate\Support\Carbon::parse($item->tanggal_monev)
+                    : null,
+                'nilai' => $rataRata,
+                'skor' => $totalSkor,
+                'skor_maksimal' => $jumlahDinilai * 4,
+                'predikat' => $predikat,
+                'status' => in_array($item->status, ['Final', 'Selesai'], true)
+                    ? 'Selesai'
+                    : ($item->status ?: 'Draft'),
+                'show_route' => route('gembira.show', ['gembira' => $item->id]),
+                'edit_route' => route('gembira.edit', ['gembira' => $item->id]),
+                'delete_route' => route('gembira.destroy', [
+                    'gembira' => $item->id,
+                ]),
+                'cetak_route' => route('gembira.cetak', ['gembira' => $item->id]),
+            ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | MASUKKAN PKGSD MBI
+        |--------------------------------------------------------------------------
+        */
+
+        $pkgsdMbiList = PkgsdMbiPengisian::query()
+            ->latest('tanggal_monev')
+            ->latest('id')
+            ->get();
+
+        foreach ($pkgsdMbiList as $item) {
+            $levelAktif = $item->jabatan_penilai === 'Peserta PKGSD MBI'
+                ? [1, 2, 3, 4]
+                : [3, 4];
+
+            $jawabanPerLevel = [
+                1 => $item->level_1_jawaban ?? [],
+                2 => $item->level_2_jawaban ?? [],
+                3 => $item->level_3_jawaban ?? [],
+                4 => $item->level_4_jawaban ?? [],
+            ];
+
+            $totalSkor = 0;
+            $jumlahDinilai = 0;
+
+            foreach ($levelAktif as $level) {
+                foreach ($jawabanPerLevel[$level] as $jawaban) {
+                    $skor = is_array($jawaban)
+                        ? ($jawaban['skor'] ?? null)
+                        : $jawaban;
+
+                    // TD tidak dihitung sebagai skor numerik.
+                    if (strtoupper((string) $skor) === 'TD') {
+                        continue;
+                    }
+
+                    if (
+                        is_numeric($skor)
+                        && (int) $skor >= 1
+                        && (int) $skor <= 4
+                    ) {
+                        $totalSkor += (int) $skor;
+                        $jumlahDinilai++;
+                    }
+                }
+            }
+
+            $rataRata = $jumlahDinilai > 0
+                ? $totalSkor / $jumlahDinilai
+                : 0;
+
+            $predikat = match (true) {
+                $jumlahDinilai === 0 => '-',
+                $rataRata >= 3.50 => 'Sangat Baik',
+                $rataRata >= 2.75 => 'Baik',
+                $rataRata >= 2.00 => 'Cukup',
+                default => 'Perlu pendampingan intensif',
+            };
+
+            $riwayat->push([
+                'id' => $item->id,
+                'jenis' => 'PKGSD MBI',
+                'instrumen' => 'Pemantauan PKGSD MBI',
+                'nama' => $item->nama_guru,
+                'unit_kerja' => $item->nama_sekolah,
+                'responden' => $item->nama_guru,
+                'status_responden' => $item->jabatan_penilai ?? '-',
+                'tanggal' => $item->tanggal_monev
+                    ? \Illuminate\Support\Carbon::parse($item->tanggal_monev)
+                    : null,
+                'nilai' => $rataRata,
+                'skor' => $totalSkor,
+                'skor_maksimal' => $jumlahDinilai * 4,
+                'predikat' => $predikat,
+                'status' => in_array($item->status, ['Final', 'Selesai'], true)
+                    ? 'Selesai'
+                    : ($item->status ?: 'Draft'),
+                'show_route' => route('pkgsd-mbi.show', [
+                    'pkgsdMbi' => $item->id,
+                ]),
+                'edit_route' => route('pkgsd-mbi.edit', [
+                    'pkgsdMbi' => $item->id,
+                ]),
+                'delete_route' => route('pkgsd-mbi.destroy', [
+                    'pkgsdMbi' => $item->id,
+                ]),
+                'cetak_route' => route('pkgsd-mbi.cetak', [
+                    'pkgsdMbi' => $item->id,
+                ]),
+            ]);
+        }
+
         /*
         |--------------------------------------------------------------------------
         | FILTER JENIS INSTRUMEN
         |--------------------------------------------------------------------------
         */
-
         if ($request->filled('jenis_instrumen')) {
 
             $jenis = $request->jenis_instrumen;
@@ -307,14 +474,11 @@ class InstrumenController extends Controller
                 )
                 ->values();
         }
-
-
         /*
         |--------------------------------------------------------------------------
         | FILTER STATUS
         |--------------------------------------------------------------------------
         */
-
         if ($request->filled('status')) {
 
             $status = $request->status;
@@ -341,8 +505,6 @@ class InstrumenController extends Controller
                 })
                 ->values();
         }
-
-
         /*
         |--------------------------------------------------------------------------
         | FILTER PENCARIAN

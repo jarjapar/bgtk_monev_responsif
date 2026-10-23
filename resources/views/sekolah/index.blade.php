@@ -266,13 +266,20 @@
                                 $jumlahInstrumen =
                                     (int) ($sekolah->bcks_pengisians_count ?? 0) +
                                     (int) ($sekolah->bk_submissions_count ?? 0) +
-                                    (int) ($sekolah->tendiks_count ?? 0);
+                                    (int) ($sekolah->tendiks_count ?? 0) +
+                                    (int) ($sekolah->gembira_pengisians_count ?? 0);
 
                                 $jumlahWawancara = (int) ($sekolah->wawancaras_count ?? 0);
 
+
                                 $kategoriMonev = [];
 
-                                if (($sekolah->bcks_pengisian_count ?? 0) > 0) {
+                                if (
+                                    ($sekolah->bcks_pengisians_count ?? 0) > 0 ||
+                                    ($sekolah->wawancaras ?? collect())->contains(function ($wawancara) {
+                                        return strtoupper(trim($wawancara->jenis_wawancara ?? '')) === 'BCKS';
+                                    })
+                                ) {
                                     $kategoriMonev[] = 'BCKS';
                                 }
 
@@ -284,16 +291,22 @@
                                     $kategoriMonev[] = 'TENDIK';
                                 }
 
-                                $kategoriWawancara = $sekolah->wawancaras
+                                if (($sekolah->gembira_pengisians_count ?? 0) > 0) {
+                                    $kategoriMonev[] = 'GEMBIRA';
+                                }
+
+                                $kategoriWawancara = ($sekolah->wawancaras ?? collect())
                                     ->pluck('jenis_wawancara')
                                     ->filter()
+                                    ->map(fn($jenis) => strtoupper(trim($jenis)))
                                     ->unique()
                                     ->values()
                                     ->all();
 
                                 $kategoriMonev = array_values(array_unique(
-                                    array_merge($kategoriMonev, $kategoriWawancara)
+                                    array_merge($kategoriMonev  , $kategoriWawancara)
                                 ));
+
                             @endphp
 
                             <tr class="transition hover:bg-slate-50">

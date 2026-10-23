@@ -2,6 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 
+// ============================================================
+// CONTROLLERS
+// ============================================================
+
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SekolahController;
@@ -12,30 +16,32 @@ use App\Http\Controllers\BKController;
 use App\Http\Controllers\BcksPengisianController;
 use App\Http\Controllers\TendikController;
 use App\Http\Controllers\ManajemenAkunController;
+use App\Http\Controllers\GembiraController;
+use App\Http\Controllers\PkgsdMbiController;
 
 
 // ============================================================
-// AUTHENTICATION
+// AUTENTIKASI
 // ============================================================
 
 Route::get('/login', [
     LoginController::class,
-    'showLoginForm'
+    'showLoginForm',
 ])->name('login');
 
 Route::post('/login', [
     LoginController::class,
-    'login'
+    'login',
 ])->name('login.process');
 
 Route::post('/logout', [
     LoginController::class,
-    'logout'
+    'logout',
 ])->name('logout');
 
 
 // ============================================================
-// AREA YANG MEMERLUKAN LOGIN
+// AREA APLIKASI - WAJIB LOGIN
 // ============================================================
 
 Route::middleware('auth')->group(function () {
@@ -46,17 +52,17 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/', [
         DashboardController::class,
-        'index'
+        'index',
     ]);
 
     Route::get('/dashboard', [
         DashboardController::class,
-        'index'
+        'index',
     ])->name('dashboard');
 
 
     // ========================================================
-    // INSTRUMEN PEMANTAUAN
+    // RIWAYAT INSTRUMEN PEMANTAUAN
     // ========================================================
 
     Route::resource('instrumen', InstrumenController::class)
@@ -66,7 +72,7 @@ Route::middleware('auth')->group(function () {
 
 
     // ========================================================
-    // BCKS
+    // INSTRUMEN BCKS
     // ========================================================
 
     Route::resource('bcks', BcksPengisianController::class)
@@ -75,66 +81,94 @@ Route::middleware('auth')->group(function () {
         ]);
 
     Route::get(
-        'bcks/{bcksPengisian}/cetak',
+        '/bcks/{bcksPengisian}/cetak',
         [BcksPengisianController::class, 'cetak']
     )->name('bcks.cetak');
 
 
     // ========================================================
-    // INSTRUMEN PEMANTAUAN TENAGA KEPENDIDIKAN
-    // ========================================================
-
-    Route::resource('tendik', TendikController::class);
-
-    Route::get('tendik/{tendik}/cetak', [
-        TendikController::class,
-        'cetak'
-    ])->name('tendik.cetak');
-
-    // ========================================================
-    // INSTRUMEN BK
+    // INSTRUMEN BIMBINGAN DAN KONSELING (BK)
     // ========================================================
 
     Route::get('/bk', [
         BKController::class,
-        'index'
+        'index',
     ])->name('bk.index');
 
     Route::get('/bk/create', [
         BKController::class,
-        'create'
+        'create',
     ])->name('bk.create');
 
     Route::post('/bk', [
         BKController::class,
-        'store'
+        'store',
     ])->name('bk.store');
 
     Route::get('/bk/{submission}', [
         BKController::class,
-        'show'
+        'show',
     ])->name('bk.show');
 
     Route::get('/bk/{submission}/edit', [
         BKController::class,
-        'edit'
+        'edit',
     ])->name('bk.edit');
 
     Route::get('/bk/{submission}/cetak', [
         BKController::class,
-        'cetak'
+        'cetak',
     ])->name('bk.cetak');
 
     Route::put('/bk/{submission}', [
         BKController::class,
-        'update'
+        'update',
     ])->name('bk.update');
 
     Route::delete('/bk/{submission}', [
         BKController::class,
-        'destroy'
+        'destroy',
     ])->name('bk.destroy');
 
+
+    // ========================================================
+    // INSTRUMEN TENAGA KEPENDIDIKAN (TENDIK)
+    // ========================================================
+
+    Route::resource('tendik', TendikController::class);
+
+    Route::get('/tendik/{tendik}/cetak', [
+        TendikController::class,
+        'cetak',
+    ])->name('tendik.cetak');
+
+
+    // ========================================================
+    // INSTRUMEN MATEMATIKA GEMBIRA
+    // ========================================================
+
+    Route::resource('gembira', GembiraController::class);
+
+    Route::get('/gembira/{gembira}/cetak', [
+        GembiraController::class,
+        'cetak',
+    ])->name('gembira.cetak');
+
+
+    // ========================================================
+    // INSTRUMEN PKGSD MBI
+    // ========================================================
+
+    Route::resource('pkgsd-mbi', PkgsdMbiController::class)
+        ->parameters([
+            'pkgsd-mbi' => 'pkgsdMbi',
+        ]);
+
+    // Cetak hasil PKGSD MBI
+    Route::get('/pkgsd-mbi/{pkgsdMbi}/cetak', [PkgsdMbiController::class, 'cetak'])
+        ->name('pkgsd-mbi.cetak');
+
+    // Pengelolaan instrumen PKGSD MBI
 
     // ========================================================
     // DATA SEKOLAH
@@ -147,48 +181,77 @@ Route::middleware('auth')->group(function () {
     // LEMBAR WAWANCARA
     // ========================================================
 
-    // Form wawancara BCKS.
+    // --------------------------------------------------------
+    // Wawancara BCKS
+    // --------------------------------------------------------
+
     Route::get('/wawancara/bcks', [
         WawancaraController::class,
-        'createBcks'
+        'createBcks',
     ])->name('wawancara.bcks.create');
 
+    Route::get('/wawancara/{wawancara}/cetak-bcks', [
+        WawancaraController::class,
+        'cetakBcks',
+    ])->name('wawancara.cetak-bcks');
 
-    // Form dan penyimpanan wawancara BK.
+
+    // --------------------------------------------------------
+    // Wawancara BK
+    // --------------------------------------------------------
+
     Route::get('/wawancara/bk', [
         WawancaraController::class,
-        'createBk'
+        'createBk',
     ])->name('wawancara.bk.create');
 
     Route::post('/wawancara/bk', [
         WawancaraController::class,
-        'storeBk'
+        'storeBk',
     ])->name('wawancara.bk.store');
 
 
-    // Form dan penyimpanan wawancara TENDIK.
+    // --------------------------------------------------------
+    // Wawancara TENDIK
+    // --------------------------------------------------------
+
     Route::get('/wawancara/tendik', [
         WawancaraController::class,
-        'createTendik'
+        'createTendik',
     ])->name('wawancara.tendik.create');
 
     Route::post('/wawancara/tendik', [
         WawancaraController::class,
-        'storeTendik'
+        'storeTendik',
     ])->name('wawancara.tendik.store');
 
-    Route::get('/wawancara/{wawancara}/cetak-bcks', [
-        \App\Http\Controllers\WawancaraController::class,
-        'cetakBcks',
-    ])->name('wawancara.cetak-bcks');
+
+    // --------------------------------------------------------
+    // Wawancara Matematika GEMBIRA
+    // --------------------------------------------------------
+
+    Route::get('/wawancara/gembira', [
+        WawancaraController::class,
+        'createGembira',
+    ])->name('wawancara.gembira.create');
+
+    Route::post('/wawancara/gembira', [
+        WawancaraController::class,
+        'storeGembira',
+    ])->name('wawancara.gembira.store');
+
+
+    // --------------------------------------------------------
+    // Cetak dan pengelolaan wawancara umum
+    // --------------------------------------------------------
 
     Route::get('/wawancara/{wawancara}/cetak', [
         WawancaraController::class,
         'cetak',
     ])->name('wawancara.cetak');
 
-    // Riwayat, detail, edit, dan hapus wawancara.
-    // Letakkan setelah route khusus BCKS, BK, dan TENDIK.
+    // Riwayat, detail, tambah, edit, dan hapus wawancara.
+    // Route khusus wawancara diletakkan sebelum resource ini.
     Route::resource('wawancara', WawancaraController::class)
         ->parameters([
             'wawancara' => 'wawancara',
@@ -199,12 +262,10 @@ Route::middleware('auth')->group(function () {
     // RENCANA TINDAK LANJUT
     // ========================================================
 
-    Route::resource(
-        'tindak-lanjut',
-        TindakLanjutController::class
-    )->parameters([
-                'tindak-lanjut' => 'tindakLanjut',
-            ]);
+    Route::resource('tindak-lanjut', TindakLanjutController::class)
+        ->parameters([
+            'tindak-lanjut' => 'tindakLanjut',
+        ]);
 
 
     // ========================================================
@@ -217,15 +278,25 @@ Route::middleware('auth')->group(function () {
 
 
     // ========================================================
-    // PROFIL SAYA
+    // PROFIL PENGGUNA
     // ========================================================
 
     Route::get('/profil', function () {
         return view('profil.index');
     });
+
+
+    // ========================================================
+    // ADMINISTRASI AKUN - KHUSUS ADMIN
+    // ========================================================
+
     Route::middleware('admin')->group(function () {
+
         Route::resource('manajemen-akun', ManajemenAkunController::class)
-            ->parameters(['manajemen-akun' => 'manajemen_akun']);
+            ->parameters([
+                'manajemen-akun' => 'manajemen_akun',
+            ]);
+
     });
 
 });

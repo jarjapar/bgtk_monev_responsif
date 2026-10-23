@@ -42,11 +42,11 @@
 
                         <div class="text-white">
                             <div class="text-lg font-bold tracking-wide">
-                                BGTK NTB
+                                MANDALIKA
                             </div>
 
                             <div class="text-xs text-blue-100">
-                                Monitoring & Evaluasi
+                                Monitoring-Analisis-Evaluasi BGTK Akurat
                             </div>
                         </div>
 
@@ -135,7 +135,7 @@
                         <p class="mt-4 text-base leading-7 text-blue-100 xl:text-lg">
                             Sistem Monitoring dan Evaluasi
                             <strong class="text-white">
-                                BGTK Provinsi Nusa Tenggara Barat
+                                MANDALIKA BGTK NTB
                             </strong>
                             untuk mendukung pengelolaan data dan evaluasi secara terintegrasi.
                         </p>
@@ -174,7 +174,7 @@
 
                         <div>
                             <p class="font-bold text-slate-900">
-                                BGTK NTB
+                                MANDALIKA BGTK NTB
                             </p>
 
                             <p class="text-xs text-slate-500">
@@ -347,10 +347,10 @@
                     <div class="mt-10 border-t border-slate-100 pt-6 text-center">
 
                         <p class="text-xs leading-5 text-slate-400">
-                            Sistem Monitoring dan Evaluasi
+                           Monitoring-Analisis-Evaluasi BGTK Akurat
                             <br>
                             <span class="font-medium text-slate-500">
-                                BGTK Provinsi Nusa Tenggara Barat
+                               MANDALIKA BGTK Provinsi Nusa Tenggara Barat
                             </span>
                         </p>
 

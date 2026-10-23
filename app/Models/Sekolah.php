@@ -52,6 +52,17 @@ class Sekolah extends Model
     }
 
     /**
+     * Relasi ke instrumen Matematika GEMBIRA.
+     */
+    public function gembiraPengisians(): HasMany
+    {
+        return $this->hasMany(GembiraPengisian::class, 'sekolah_id');
+    }
+    public function pkgsdMbiPengisians(): HasMany
+    {
+        return $this->hasMany(PkgsdMbiPengisian::class, 'sekolah_id');
+    }
+    /**
      * Relasi ke data wawancara.
      */
     public function wawancaras(): HasMany

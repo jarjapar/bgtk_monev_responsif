@@ -22,13 +22,27 @@
 
             <a href="{{ route('wawancara.index') }}"
                 class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                 </svg>
                 Kembali
             </a>
         </div>
+        <section class="overflow-hidden rounded-2xl bg-white shadow-sm"
+            style="border: 1px solid #e2e8f0; border-left: 4px solid #2563eb;">
 
+            <div class="p-6">
+                <h2 class="text-lg font-bold text-slate-800">
+                    Panduan Wawancara TENDIK
+                </h2>
+
+                <p class="mt-1 text-sm leading-6 text-slate-500">
+                    Isilah identitas dan tuliskan jawaban berdasarkan hasil wawancara
+                    dengan responden secara jelas dan sesuai fakta.
+                </p>
+            </div>
+        </section>
         {{-- Validasi --}}
         @if ($errors->any())
             <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
@@ -127,23 +141,45 @@
                         @enderror
                     </div>
 
+
                     <div>
                         <label for="jabatan_responden" class="mb-2 block text-sm font-semibold text-slate-700">
-                            Jabatan <span class="text-red-500">*</span>
+                            Jabatan Responden <span class="text-red-500">*</span>
                         </label>
+
                         <select id="jabatan_responden" name="jabatan_responden" required
                             class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
-                            <option value="">Pilih jabatan</option>
-                            <option value="Operator Sekolah" @selected(old('jabatan_responden') === 'Operator Sekolah')>
-                                Operator Sekolah</option>
-                            <option value="Bendahara Sekolah" @selected(old('jabatan_responden') === 'Bendahara Sekolah')>
-                                Bendahara Sekolah</option>
-                            <option value="Lainnya" @selected(old('jabatan_responden') === 'Lainnya')>Lainnya</option>
+
+                            <option value="" disabled @selected(old('jabatan_responden') === '')>
+                                Pilih jabatan
+                            </option>
+
+                            <option value="Tendik" @selected(old('jabatan_responden') === 'Tendik')>
+                                Tendik
+                            </option>
+
+                            <option value="Operator" @selected(old('jabatan_responden') === 'Operator')>
+                                Operator
+                            </option>
+
+                            <option value="Bendahara" @selected(old('jabatan_responden') === 'Bendahara')>
+                                Bendahara
+                            </option>
+
+                            <option value="Kepala Sekolah" @selected(old('jabatan_responden') === 'Kepala Sekolah')>
+                                Kepala Sekolah
+                            </option>
+
+                            <option value="Rekan Sejawat/Guru" @selected(old('jabatan_responden') === 'Rekan Sejawat/Guru')>
+                                Rekan Sejawat/Guru
+                            </option>
                         </select>
+
                         @error('jabatan_responden')
                             <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
+
 
                     <div id="jabatan-lainnya-wrap" class="hidden">
                         <label for="jabatan_lainnya" class="mb-2 block text-sm font-semibold text-slate-700">
@@ -211,7 +247,7 @@
             {{-- V. Pertanyaan Terbuka --}}
             <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
                 <div class="border-b border-slate-100 bg-slate-50 px-6 py-4">
-                    <h2 class="font-bold text-slate-800">C. Pertanyaan Terbuka</h2>
+                    <h2 class="font-bold text-slate-800">C. Hasil Wawancara TENDIK</h2>
                     <p class="mt-1 text-sm text-slate-500">
                         Jawablah berdasarkan pengalaman Anda setelah mengikuti pelatihan.
                         Seluruh pertanyaan wajib diisi.

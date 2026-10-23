@@ -68,80 +68,109 @@
             </div>
         @endif
 
-        {{-- Informasi Pelaksanaan --}}
+        {{-- A. Identitas Petugas Monev --}}
         <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div class="border-b border-slate-100 px-6 py-5">
-                <h2 class="font-bold text-slate-800">Informasi Pelaksanaan</h2>
+            <div class="border-b border-slate-200 bg-slate-50 px-6 py-5">
+                <h2 class="text-lg font-bold text-slate-800">A. Identitas Petugas Monev</h2>
+                <p class="mt-1 text-sm text-slate-500">Informasi petugas pelaksana monitoring dan evaluasi.</p>
             </div>
 
-            <div class="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="grid grid-cols-1 gap-x-8 gap-y-5 p-6 md:grid-cols-2">
                 <div>
-                    <p class="text-xs font-semibold uppercase text-slate-400">Tanggal Wawancara</p>
-                    <p class="mt-1 font-semibold text-slate-800">
-                        {{ $wawancara->tanggal_wawancara
-        ? \Carbon\Carbon::parse($wawancara->tanggal_wawancara)->format('d-m-Y')
-        : '-' }}
-                    </p>
-                </div>
-
-                <div>
-                    <p class="text-xs font-semibold uppercase text-slate-400">Status</p>
-                    <p
-                        class="mt-1 font-semibold {{ ($wawancara->status ?: 'Selesai') === 'Selesai' ? 'text-emerald-700' : 'text-amber-700' }}">
-                        {{ $wawancara->status ?: 'Selesai' }}
-                    </p>
-                </div>
-
-                <div>
-                    <p class="text-xs font-semibold uppercase text-slate-400">Lokasi Monev</p>
-                    <p class="mt-1 font-semibold text-slate-800">
-                        {{ $informasiTambahan['lokasi_monev'] ?? '-' }}
-                    </p>
-                </div>
-
-                <!-- <div>
-                    <p class="text-xs font-semibold uppercase text-slate-400">Kabupaten/Kota</p>
-                    <p class="mt-1 font-semibold text-slate-800">
-                        {{ $informasiTambahan['kab_kota'] ?? '-' }}
-                    </p>
-                </div> -->
-            </div>
-        </section>
-
-        {{-- Identitas Responden dan Petugas Monev --}}
-        <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div class="border-b border-slate-100 px-6 py-5">
-                <h2 class="font-bold text-slate-800">
-                    Identitas Responden dan Petugas Monev
-                </h2>
-            </div>
-
-            <div class="grid grid-cols-1 gap-5 p-6 sm:grid-cols-2">
-                <div>
-                    <p class="text-xs font-semibold uppercase text-slate-400">Nama Responden</p>
-                    <p class="mt-1 font-semibold text-slate-800">
-                        {{ $wawancara->nama_responden ?: $wawancara->nama_narasumber ?: '-' }}
-                    </p>
-                </div>
-
-                <div>
-                    <p class="text-xs font-semibold uppercase text-slate-400">Instansi Responden</p>
-                    <p class="mt-1 font-semibold text-slate-800">
-                        {{ $wawancara->unit_kerja_responden ?: $wawancara->jabatan_narasumber ?: '-' }}
-                    </p>
-                </div>
-
-                <div>
-                    <p class="text-xs font-semibold uppercase text-slate-400">Nama Petugas Monev</p>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Nama Petugas Monev</p>
                     <p class="mt-1 font-semibold text-slate-800">
                         {{ $wawancara->nama_petugas_monev ?: $wawancara->nama_pewawancara ?: '-' }}
                     </p>
                 </div>
 
                 <div>
-                    <p class="text-xs font-semibold uppercase text-slate-400">Instansi Petugas</p>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Instansi</p>
                     <p class="mt-1 font-semibold text-slate-800">
-                        {{ $wawancara->unit_kerja_petugas ?: $informasiTambahan['instansi_petugas'] ?? '-' }}
+                        {{ $wawancara->unit_kerja_petugas ?: ($informasiTambahan['instansi_petugas'] ?? '-') }}
+                    </p>
+                </div>
+
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Lokasi Monev</p>
+                    <p class="mt-1 font-semibold text-slate-800">
+                        {{ $informasiTambahan['lokasi_monev'] ?? '-' }}
+                    </p>
+                </div>
+
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Tanggal Wawancara</p>
+                    <p class="mt-1 font-semibold text-slate-800">
+                        {{ $wawancara->tanggal_wawancara
+                            ? \Carbon\Carbon::parse($wawancara->tanggal_wawancara)->format('d-m-Y')
+                            : '-' }}
+                    </p>
+                </div>
+
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Status</p>
+                    <p
+                        class="mt-1 font-semibold {{ ($wawancara->status ?: 'Selesai') === 'Selesai' ? 'text-emerald-700' : 'text-amber-700' }}">
+                        {{ $wawancara->status ?: 'Selesai' }}
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        {{-- B. Identitas Responden --}}
+        <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div class="border-b border-slate-200 bg-slate-50 px-6 py-5">
+                <h2 class="text-lg font-bold text-slate-800">B. Identitas Responden</h2>
+                <p class="mt-1 text-sm text-slate-500">Identitas responden yang mengisi instrumen BK.</p>
+            </div>
+
+            <div class="grid grid-cols-1 gap-x-8 gap-y-5 p-6 md:grid-cols-2">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Nama Responden</p>
+                    <p class="mt-1 font-semibold text-slate-800">
+                        {{ $wawancara->nama_responden ?: $wawancara->nama_narasumber ?: '-' }}
+                    </p>
+                </div>
+
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Jabatan Responden</p>
+                    <p class="mt-1 font-semibold text-slate-800">
+                        {{ $informasiTambahan['jabatan'] ?? '-' }}
+                    </p>
+                </div>
+
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Satuan Pendidikan</p>
+                    <p class="mt-1 font-semibold text-slate-800">
+                        {{ $informasiTambahan['satuan_pendidikan'] ?? '-' }}
+                    </p>
+                </div>
+
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Masa Kerja (tahun)</p>
+                    <p class="mt-1 font-semibold text-slate-800">
+                        @if (isset($informasiTambahan['masa_kerja']) && $informasiTambahan['masa_kerja'] !== '')
+                            {{ $informasiTambahan['masa_kerja'] }} tahun
+                        @else
+                            -
+                        @endif
+                    </p>
+                </div>
+
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Nama Kegiatan/Pelatihan</p>
+                    <p class="mt-1 font-semibold text-slate-800">
+                        {{ $informasiTambahan['nama_kegiatan'] ?? '-' }}
+                    </p>
+                </div>
+
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Tanggal Pengisian</p>
+                    <p class="mt-1 font-semibold text-slate-800">
+                        @if (!empty($informasiTambahan['tanggal_pengisian']))
+                            {{ \Carbon\Carbon::parse($informasiTambahan['tanggal_pengisian'])->format('d-m-Y') }}
+                        @else
+                            -
+                        @endif
                     </p>
                 </div>
             </div>
@@ -149,81 +178,16 @@
 
         {{-- Hasil Wawancara --}}
         <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div class="border-b border-slate-100 px-6 py-5">
-                <h2 class="font-bold text-slate-800">Hasil Wawancara</h2>
+            <div class="border-b border-slate-200 bg-slate-50 px-6 py-5">
+                <h2 class="text-lg font-bold text-slate-800">C. Hasil Wawancara BK</h2>
                 <p class="mt-1 text-sm text-slate-500">
-                    Informasi tambahan responden dan jawaban wawancara.
+                    Jawaban wawancara dengan responden.
                 </p>
             </div>
 
             <div class="space-y-6 p-6">
-                {{-- Informasi Tambahan --}}
-                <div>
-                    <h3 class="mb-4 font-semibold text-slate-800">
-                        A. Informasi Tambahan Responden
-                    </h3>
-
-                    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                        <div>
-                            <p class="text-xs font-semibold uppercase text-slate-400">Jabatan</p>
-                            <p class="mt-1 font-semibold text-slate-800">
-                                {{ $informasiTambahan['jabatan'] ?? '-' }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <p class="text-xs font-semibold uppercase text-slate-400">Satuan Pendidikan</p>
-                            <p class="mt-1 font-semibold text-slate-800">
-                                {{ $informasiTambahan['satuan_pendidikan'] ?? '-' }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <p class="text-xs font-semibold uppercase text-slate-400">Masa Kerja</p>
-                            <p class="mt-1 font-semibold text-slate-800">
-                                @if (isset($informasiTambahan['masa_kerja']) && $informasiTambahan['masa_kerja'] !== '')
-                                    {{ $informasiTambahan['masa_kerja'] }} tahun
-                                @else
-                                    -
-                                @endif
-                            </p>
-                        </div>
-
-                        <div>
-                            <p class="text-xs font-semibold uppercase text-slate-400">Nama Kegiatan</p>
-                            <p class="mt-1 font-semibold text-slate-800">
-                                {{ $informasiTambahan['nama_kegiatan'] ?? '-' }}
-                            </p>
-                        </div>
-
-                        <div>
-                            <p class="text-xs font-semibold uppercase text-slate-400">Tanggal Pengisian</p>
-                            <p class="mt-1 font-semibold text-slate-800">
-                                @if (!empty($informasiTambahan['tanggal_pengisian']))
-                                    {{ \Carbon\Carbon::parse($informasiTambahan['tanggal_pengisian'])->format('d-m-Y') }}
-                                @else
-                                    -
-                                @endif
-                            </p>
-                        </div>
-
-                        <div>
-                            <p class="text-xs font-semibold uppercase text-slate-400">Instansi Petugas</p>
-                            <p class="mt-1 font-semibold text-slate-800">
-                                {{ $informasiTambahan['instansi_petugas'] ?? $wawancara->unit_kerja_petugas ?? '-' }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="border-t border-slate-100"></div>
-
                 {{-- Jawaban Wawancara --}}
                 <div>
-                    <h3 class="mb-4 font-semibold text-slate-800">
-                        B. Jawaban Wawancara
-                    </h3>
-
                     <div class="space-y-6">
                         @foreach ($pertanyaanBk as $nomor => $pertanyaan)
                             <div>

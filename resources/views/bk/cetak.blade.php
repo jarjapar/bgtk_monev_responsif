@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -547,31 +548,71 @@
 <body>
 
     @php
-        $jumlahTidak = max(($submission->jumlah_soal ?? 0) - ($submission->jumlah_ya ?? 0), 0);
+        $levelNames = [
+            1 => 'Reaction',
+            2 => 'Learning',
+            3 => 'Behavior',
+            4 => 'Results',
+        ];
 
-        $levelNames = [1 => 'Reaction', 2 => 'Learning', 3 => 'Behavior', 4 => 'Results'];
+        $isBK = $submission->jabatan_responden === 'BK';
+        $allowedLevels = $isBK ? [1, 2, 3, 4] : [3, 4];
 
-        $answers = $submission->answers->filter(fn($a) => $a->question);
+        $answers = $submission->answers
+            ->filter(fn($a) => $a->question)
+            ->filter(fn($a) => in_array(
+                (int) $a->question->level,
+                $allowedLevels,
+                true
+            ))
+            ->sortBy(fn($a) => [
+                (int) $a->question->level,
+                $a->question->urutan ?? $a->question->nomor,
+            ])
+            ->values();
 
         $answersByLevel = $answers
             ->groupBy(fn($a) => (int) $a->question->level)
             ->sortKeys();
 
+        $jumlahSoal = $answers->count();
+
+        $jumlahYa = $answers
+            ->filter(fn($a) => (bool) $a->jawaban)
+            ->count();
+
+        $jumlahTidak = max($jumlahSoal - $jumlahYa, 0);
+
+        $skorPersen = $jumlahSoal > 0
+            ? ($jumlahYa / $jumlahSoal) * 100
+            : 0;
+
+        $kategori = $skorPersen >= 50
+            ? 'Baik / Kategori Tinggi'
+            : 'Kurang / Kategori Rendah';
+
         $levelStats = [];
-        foreach ($levelNames as $lv => $name) {
-            $items = $answers->filter(fn($a) => (int) $a->question->level === $lv);
+
+        foreach ($allowedLevels as $lv) {
+            $items = $answers->filter(
+                fn($a) => (int) $a->question->level === $lv
+            );
+
             $total = $items->count();
             $yes = $items->filter(fn($a) => (bool) $a->jawaban)->count();
+
             $levelStats[$lv] = [
                 'total' => $total,
                 'yes' => $yes,
-                'pct' => $total > 0 ? round(($yes / $total) * 100, 2) : 0,
+                'pct' => $total > 0
+                    ? round(($yes / $total) * 100, 2)
+                    : 0,
             ];
         }
     @endphp
 
     {{-- =========================================================
-         TOOLBAR
+    TOOLBAR
     ========================================================== --}}
 
     <div class="print-toolbar no-print">
@@ -594,8 +635,7 @@
             <button type="button" onclick="window.print()" class="btn btn-print">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                     stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M6 9V2h12v7
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 9V2h12v7
                            M6 18H4a2 2 0 01-2-2v-5
                            a2 2 0 012-2h16a2 2 0 012 2v5
                            a2 2 0 01-2 2h-2
@@ -611,7 +651,7 @@
 
 
     {{-- =========================================================
-         DOKUMEN
+    DOKUMEN
     ========================================================== --}}
 
     <main class="document">
@@ -654,8 +694,8 @@
                         <td class="label">Jabatan Responden</td>
                         <td class="value">
                             {{ $submission->jabatan_responden === 'Lainnya'
-                                ? ($submission->jabatan_lainnya ?: 'Lainnya')
-                                : ($submission->jabatan_responden ?: '-') }}
+    ? ($submission->jabatan_lainnya ?: 'Lainnya')
+    : ($submission->jabatan_responden ?: '-') }}
                         </td>
                     </tr>
 
@@ -730,21 +770,21 @@
                 <div class="summary-card">
                     <div class="summary-label">Total Skor</div>
                     <div class="summary-value">
-                        {{ $submission->jumlah_ya }} / {{ $submission->jumlah_soal }}
+                        {{ $jumlahYa }} / {{ $jumlahSoal }}
                     </div>
                 </div>
 
                 <div class="summary-card">
                     <div class="summary-label">Nilai Akhir</div>
                     <div class="summary-value">
-                        {{ number_format($submission->skor_persentase, 2, ',', '.') }}%
+                        {{ number_format($skorPersen, 2, ',', '.') }}%
                     </div>
                 </div>
 
                 <div class="summary-card">
                     <div class="summary-label">Predikat</div>
                     <div class="summary-value summary-predikat" style="font-size: 14px;">
-                        {{ $submission->kategori ?: '-' }}
+                        {{ $kategori }}
                     </div>
                 </div>
 
@@ -761,8 +801,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($levelNames as $lv => $levelName)
-                        @php $st = $levelStats[$lv]; @endphp
+                    @foreach ($levelStats as $lv => $st)
+                        @php $levelName = $levelNames[$lv]; @endphp
                         <tr>
                             <td class="left">Level {{ $lv }} - {{ $levelName }}</td>
                             <td>{{ $st['yes'] }}</td>
@@ -782,7 +822,7 @@
         <section class="section">
 
             <h2 class="section-title">
-                C. Hasil Penilaian {{ $submission->jumlah_soal }} Indikator
+                C. Hasil Penilaian {{ $jumlahSoal }} Indikator
             </h2>
 
             @forelse ($answersByLevel as $level => $items)
@@ -885,4 +925,5 @@
     </main>
 
 </body>
+
 </html>

@@ -7,7 +7,7 @@
         {{-- HEADER --}}
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                 <div class="mb-2 flex items-center gap-2 text-sm text-slate-500">
+                <div class="mb-2 flex items-center gap-2 text-sm text-slate-500">
                     <a href="{{ route('wawancara.index') }}" class="hover:text-blue-600">
                         Wawancara
                     </a>
@@ -15,11 +15,11 @@
                     <span>Wawancara BK</span>
                 </div>
                 <h1 class="text-2xl font-bold text-slate-800">
-                  Instrumen Wawancara BK
+                    Instrumen Wawancara BK
                 </h1>
 
                 <p class="mt-1 text-sm text-slate-500">
-                     Lengkapi identitas, tanggal evaluasi, dan hasil wawancara.
+                    Lengkapi identitas, tanggal evaluasi, dan hasil wawancara.
                 </p>
             </div>
 
@@ -39,7 +39,7 @@
 
             <div class="p-6">
                 <h2 class="text-lg font-bold text-slate-800">
-                    Instrumen Wawancara BK
+                    Panduan Wawancara BK
                 </h2>
 
                 <p class="mt-1 text-sm leading-6 text-slate-500">
@@ -89,8 +89,8 @@
                             Nama Petugas Monev <span class="text-red-500">*</span>
                         </label>
 
-                        <input type="text" id="nama_petugas_monev" name="nama_petugas_monev" placeholder="Masukkan nama petugas"
-                            value="{{ old('nama_petugas_monev') }}" required 
+                        <input type="text" id="nama_petugas_monev" name="nama_petugas_monev"
+                            placeholder="Masukkan nama petugas" value="{{ old('nama_petugas_monev') }}" required
                             class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
                     </div>
 
@@ -146,23 +146,46 @@
                         <label for="nama_responden" class="mb-2 block text-sm font-semibold text-slate-700">
                             Nama Responden <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" id="nama_responden" name="nama_responden"
-                            value="{{ old('nama_responden') }}" required placeholder="Masukkan nama responden"
+                        <input type="text" id="nama_responden" name="nama_responden" value="{{ old('nama_responden') }}"
+                            required placeholder="Masukkan nama responden"
                             class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
                     </div>
 
+
                     <div>
                         <label for="jabatan" class="mb-2 block text-sm font-semibold text-slate-700">
-                            Jabatan <span class="text-red-500">*</span>
+                            Jabatan Responden
+                            <span class="text-red-500">*</span>
                         </label>
+
                         <select id="jabatan" name="jabatan" required
-                            class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
-                            <option value="">Pilih jabatan</option>
-                            @foreach (['Kepala Sekolah', 'Guru BK', 'Guru', 'Wakil Kepala Sekolah', 'Pengawas Sekolah', 'Lainnya'] as $jabatan)
-                                <option value="{{ $jabatan }}" @selected(old('jabatan') === $jabatan)>{{ $jabatan }}</option>
-                            @endforeach
+                            class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                            <option value="" disabled @selected(old('jabatan', $wawancara->jabatan ?? '') === '')>
+                                Pilih jabatan
+                            </option>
+
+                            <option value="BK" @selected(old('jabatan', $wawancara->jabatan ?? '') === 'BK')>
+                                BK
+                            </option>
+
+                            <option value="Kepala Sekolah" @selected(old('jabatan', $wawancara->jabatan ?? '') === 'Kepala Sekolah')>
+                                Kepala Sekolah
+                            </option>
+
+                            <option value="Rekan Sejawat" @selected(old('jabatan', $wawancara->jabatan ?? '') === 'Rekan Sejawat')>
+                                Rekan Sejawat
+                            </option>
+
+                            <option value="Peserta Didik" @selected(old('jabatan', $wawancara->jabatan ?? '') === 'Peserta Didik')>
+                                Peserta Didik
+                            </option>
                         </select>
+
+                        @error('jabatan')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
+
 
                     <div>
                         <label for="satuan_pendidikan" class="mb-2 block text-sm font-semibold text-slate-700">
@@ -186,8 +209,8 @@
                         <label for="nama_kegiatan" class="mb-2 block text-sm font-semibold text-slate-700">
                             Nama Kegiatan/Pelatihan <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" id="nama_kegiatan" name="nama_kegiatan"
-                            value="{{ old('nama_kegiatan') }}" required placeholder="Masukkan nama kegiatan/pelatihan"
+                        <input type="text" id="nama_kegiatan" name="nama_kegiatan" value="{{ old('nama_kegiatan') }}"
+                            required placeholder="Masukkan nama kegiatan/pelatihan"
                             class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
                     </div>
 
@@ -208,7 +231,7 @@
 
                 <div class="border-b border-slate-200 bg-slate-50 px-6 py-5">
                     <h2 class="text-lg font-bold text-slate-800">
-                        C. Daftar Pertanyaan Wawancara
+                        C. Hasil Wawancara BK
                     </h2>
 
                     <p class="mt-1 text-sm text-slate-500">

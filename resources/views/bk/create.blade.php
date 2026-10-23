@@ -294,7 +294,7 @@
 
                     <div>
 
-                        <h class="text-lg font-bold text-slate-800">
+                        <h2 class="text-lg font-bold text-slate-800">
 
                             A. Identitas Petugas Monev
 
@@ -473,12 +473,14 @@
 
                 <div>
                     <label for="jabatan_responden" class="mb-2 block text-sm font-semibold text-slate-700">Jabatan Responden <span class="text-red-500">*</span></label>
-                    <select id="jabatan_responden" name="jabatan_responden" required class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
-                        <option value="">Pilih jabatan</option>
-                        <option value="Operator Sekolah" {{ old('jabatan_responden') === 'Operator Sekolah' ? 'selected' : '' }}>Operator Sekolah</option>
-                        <option value="Bendahara Sekolah" {{ old('jabatan_responden') === 'Bendahara Sekolah' ? 'selected' : '' }}>Bendahara Sekolah</option>
-                        <option value="Lainnya" {{ old('jabatan_responden') === 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
-                    </select>
+                   <select id="jabatan_responden" name="jabatan_responden" required
+                    class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                    <option value="">Pilih jabatan</option>
+                    <option value="BK" {{ old('jabatan_responden') === 'BK' ? 'selected' : '' }}>BK</option>
+                    <option value="Kepala Sekolah" {{ old('jabatan_responden') === 'Kepala Sekolah' ? 'selected' : '' }}>Kepala Sekolah</option>
+                    <option value="Rekan Sejawat" {{ old('jabatan_responden') === 'Rekan Sejawat' ? 'selected' : '' }}>Rekan Sejawat</option>
+                    <option value="Peserta Didik" {{ old('jabatan_responden') === 'Peserta Didik' ? 'selected' : '' }}>Peserta Didik</option>
+                </select>
                 </div>
 
                 <div id="jabatanLainnyaWrapper" class="{{ old('jabatan_responden') === 'Lainnya' ? '' : 'hidden' }}">
@@ -574,7 +576,7 @@
 
                         @endphp
 
-                        <tr>
+                        <tr class="level-header" data-level="{{ $question->level }}">
 
                             <td
 
@@ -618,7 +620,7 @@
 
                         @endphp
 
-                        <tr>
+                        <tr class="bagian-header" data-level="{{ $question->level }}">
 
                             <td
 
@@ -657,6 +659,8 @@
                         class="question-item transition hover:bg-slate-50"
 
                         data-question-id="{{ $question->id }}"
+
+                        data-level="{{ $question->level }}"
 
                     >
 
@@ -819,251 +823,183 @@
 ========================================================== --}}
 
 <script>
-
 document.addEventListener('DOMContentLoaded', function () {
-
     const form = document.getElementById('bkForm');
+    const jabatanSelect = document.getElementById('jabatan_responden');
 
-    const questions = document.querySelectorAll(
-
-        '.question-item'
-
+    const questions = Array.from(
+        document.querySelectorAll('.question-item')
     );
 
-    const answeredCount = document.getElementById(
+    const levelHeaders = document.querySelectorAll('.level-header');
+    const bagianHeaders = document.querySelectorAll('.bagian-header');
 
-        'answeredCount'
+    const answeredCount = document.getElementById('answeredCount');
+    const progressBar = document.getElementById('progressBar');
+    const progressPercent = document.getElementById('progressPercent');
+    const jawabanSummary = document.getElementById('jawabanSummary');
+    const submitButton = document.getElementById('submitButton');
 
-    );
+    function getAllowedLevels() {
+        const jabatan = jabatanSelect.value;
 
-    const progressBar = document.getElementById(
+        if (jabatan === 'BK') {
+            return [1, 2, 3, 4];
+        }
 
-        'progressBar'
+        if (jabatan !== '') {
+            return [3, 4];
+        }
 
-    );
+        // Sebelum jabatan dipilih, pertahankan tampilan awal.
+        return [1, 2, 3, 4];
+    }
 
-    const progressPercent = document.getElementById(
+    function updateVisibleLevels() {
+        const allowedLevels = getAllowedLevels();
 
-        'progressPercent'
+        function levelIsAllowed(element) {
+            return allowedLevels.includes(
+                Number(element.dataset.level)
+            );
+        }
 
-    );
+        levelHeaders.forEach(function (row) {
+            row.hidden = !levelIsAllowed(row);
+        });
 
-    const jawabanSummary = document.getElementById(
+        bagianHeaders.forEach(function (row) {
+            row.hidden = !levelIsAllowed(row);
+        });
 
-        'jawabanSummary'
+        questions.forEach(function (row) {
+            const visible = levelIsAllowed(row);
+            row.hidden = !visible;
 
-    );
+            row.querySelectorAll('input[type="radio"]').forEach(function (radio) {
+                radio.disabled = !visible;
+            });
+        });
 
-    const submitButton = document.getElementById(
-
-        'submitButton'
-
-    );
+        updateProgress();
+    }
 
     function updateProgress() {
-
         let answered = 0;
-
         let yes = 0;
-
         let no = 0;
 
-        questions.forEach(function (question) {
+        const visibleQuestions = questions.filter(function (question) {
+            return !question.hidden;
+        });
 
+        visibleQuestions.forEach(function (question) {
             const checked = question.querySelector(
-
                 'input[type="radio"]:checked'
-
             );
 
             if (checked) {
-
                 answered++;
 
                 if (checked.value === '1') {
-
                     yes++;
-
                 } else {
-
                     no++;
-
                 }
-
             }
-
         });
 
-        const total = questions.length;
-
+        const total = visibleQuestions.length;
         const percentage = total > 0
-
             ? Math.round((answered / total) * 100)
-
             : 0;
 
         answeredCount.textContent = answered;
 
-        progressBar.style.width =
-
-            percentage + '%';
-
-        progressPercent.textContent =
-
-            percentage + '%';
-
-        jawabanSummary.textContent = answered > 0
-
-            ? yes + ' Ya · ' + no + ' Tidak'
-
-            : 'Belum ada jawaban';
-
-    }
-
-    /*
-
-    |--------------------------------------------------------------------------
-
-    | Update progress ketika Ya/Tidak dipilih
-
-    |--------------------------------------------------------------------------
-
-    */
-
-    form.addEventListener('change', function (event) {
-
-        if (
-
-            event.target.matches(
-
-                'input[type="radio"]'
-
-            )
-
-        ) {
-
-            updateProgress();
-
+        // Perbarui jumlah butir pada tampilan progres yang sudah ada.
+        const totalLabel = answeredCount.parentElement;
+        if (totalLabel) {
+            const textNodes = Array.from(totalLabel.childNodes);
+            textNodes.forEach(function (node) {
+                if (
+                    node.nodeType === Node.TEXT_NODE &&
+                    node.textContent.includes('/ ')
+                ) {
+                    node.textContent = ' / ' + total + ' butir';
+                }
+            });
         }
 
+        progressBar.style.width = percentage + '%';
+        progressPercent.textContent = percentage + '%';
+
+        jawabanSummary.textContent = answered > 0
+            ? yes + ' Ya · ' + no + ' Tidak'
+            : 'Belum ada jawaban';
+    }
+
+    form.addEventListener('change', function (event) {
+        if (
+            event.target.matches('input[type="radio"]') ||
+            event.target === jabatanSelect
+        ) {
+            updateVisibleLevels();
+        }
     });
 
-    /*
-
-    |--------------------------------------------------------------------------
-
-    | Validasi sebelum submit
-
-    |--------------------------------------------------------------------------
-
-    */
+    jabatanSelect.addEventListener('change', updateVisibleLevels);
 
     form.addEventListener('submit', function (event) {
+        updateVisibleLevels();
 
-        const unanswered = [];
-
-        questions.forEach(function (question) {
-
-            const checked = question.querySelector(
-
-                'input[type="radio"]:checked'
-
-            );
-
-            if (!checked) {
-
-                unanswered.push(question);
-
+        const unanswered = questions.filter(function (question) {
+            if (question.hidden) {
+                return false;
             }
 
+            return !question.querySelector(
+                'input[type="radio"]:checked'
+            );
         });
 
-        /*
-
-        |--------------------------------------------------------------------------
-
-        | Masih ada pertanyaan kosong
-
-        |--------------------------------------------------------------------------
-
-        */
+        if (!jabatanSelect.value) {
+            event.preventDefault();
+            alert('Silakan pilih jabatan responden terlebih dahulu.');
+            jabatanSelect.focus();
+            return;
+        }
 
         if (unanswered.length > 0) {
-
             event.preventDefault();
 
             const firstQuestion = unanswered[0];
 
             firstQuestion.scrollIntoView({
-
                 behavior: 'smooth',
-
                 block: 'center'
-
             });
 
-            firstQuestion.classList.add(
-
-                'bg-red-50'
-
-            );
+            firstQuestion.classList.add('bg-red-50');
 
             setTimeout(function () {
-
-                firstQuestion.classList.remove(
-
-                    'bg-red-50'
-
-                );
-
+                firstQuestion.classList.remove('bg-red-50');
             }, 2500);
 
             alert(
-
                 'Masih ada ' +
-
                 unanswered.length +
-
                 ' pernyataan yang belum dijawab.'
-
             );
 
             return;
-
         }
 
-        /*
-
-        |--------------------------------------------------------------------------
-
-        | Submit sedang diproses
-
-        |--------------------------------------------------------------------------
-
-        */
-
         submitButton.disabled = true;
-
-        submitButton.textContent =
-
-            'Menyimpan...';
-
+        submitButton.textContent = 'Menyimpan...';
     });
 
-    /*
-
-    |--------------------------------------------------------------------------
-
-    | Initial progress
-
-    |--------------------------------------------------------------------------
-
-    */
-
-    updateProgress();
-
+    updateVisibleLevels();
 });
-
 </script>
 
 @endsection

@@ -1,353 +1,311 @@
 @php
 
-        /*
+    /*
 
-        |--------------------------------------------------------------------------
+    |--------------------------------------------------------------------------
 
-        | DATA PERTANYAAN ASLI INSTRUMEN TENDIK
+    | DATA PERTANYAAN ASLI INSTRUMEN TENDIK
 
-        |--------------------------------------------------------------------------
+    |--------------------------------------------------------------------------
 
-        */
+    */
 
-        $pertanyaan = [
+    $pertanyaan = [
 
-            1 => 'Materi pelatihan sesuai dengan tugas dan kebutuhan saya sebagai tenaga kependidikan.',
+        1 => 'Materi pelatihan sesuai dengan tugas dan kebutuhan saya sebagai tenaga kependidikan.',
 
-            2 => 'Cakupan materi lengkap dan disusun secara runtut sehingga mudah diikuti.',
+        2 => 'Cakupan materi lengkap dan disusun secara runtut sehingga mudah diikuti.',
 
-            3 => 'Materi yang disampaikan sesuai dengan ketentuan dan perkembangan terbaru.',
+        3 => 'Materi yang disampaikan sesuai dengan ketentuan dan perkembangan terbaru.',
 
-            4 => 'Materi dilengkapi contoh kasus dan praktik sehingga dapat saya terapkan langsung di sekolah.',
+        4 => 'Materi dilengkapi contoh kasus dan praktik sehingga dapat saya terapkan langsung di sekolah.',
 
-            5 => 'Bahan pendukung (modul, tayangan, contoh dokumen) lengkap, jelas, dan bermanfaat.',
+        5 => 'Bahan pendukung (modul, tayangan, contoh dokumen) lengkap, jelas, dan bermanfaat.',
 
-            6 => 'Narasumber/fasilitator menguasai materi dan menjawab pertanyaan dengan tepat.',
+        6 => 'Narasumber/fasilitator menguasai materi dan menjawab pertanyaan dengan tepat.',
 
-            7 => 'Narasumber/fasilitator menyampaikan materi dengan jelas, sistematis, dan mudah dipahami.',
+        7 => 'Narasumber/fasilitator menyampaikan materi dengan jelas, sistematis, dan mudah dipahami.',
 
-            8 => 'Metode dan media pembelajaran (contoh kasus, praktik, tayangan) membuat saya tertarik dan terlibat aktif.',
+        8 => 'Metode dan media pembelajaran (contoh kasus, praktik, tayangan) membuat saya tertarik dan terlibat aktif.',
 
-            9 => 'Narasumber/fasilitator terbuka terhadap pertanyaan, mendorong diskusi, dan memberikan umpan balik.',
+        9 => 'Narasumber/fasilitator terbuka terhadap pertanyaan, mendorong diskusi, dan memberikan umpan balik.',
 
-            10 => 'Narasumber/fasilitator bersikap ramah dan santun serta mengelola waktu dengan baik.',
+        10 => 'Narasumber/fasilitator bersikap ramah dan santun serta mengelola waktu dengan baik.',
 
-            11 => 'Informasi kegiatan (undangan, jadwal, dan bahan) disampaikan dengan jelas dan tepat waktu.',
+        11 => 'Informasi kegiatan (undangan, jadwal, dan bahan) disampaikan dengan jelas dan tepat waktu.',
 
-            12 => 'Alokasi waktu dan jadwal pelatihan memadai dan dijalankan sesuai rencana.',
+        12 => 'Alokasi waktu dan jadwal pelatihan memadai dan dijalankan sesuai rencana.',
 
-            13 => 'Tempat, sarana prasarana, dan konsumsi mendukung kelancaran kegiatan.',
+        13 => 'Tempat, sarana prasarana, dan konsumsi mendukung kelancaran kegiatan.',
 
-            14 => 'Panitia melayani peserta dengan ramah, cepat tanggap, dan membantu.',
+        14 => 'Panitia melayani peserta dengan ramah, cepat tanggap, dan membantu.',
 
-            15 => 'Secara keseluruhan, saya puas dengan penyelenggaraan pelatihan ini.',
+        15 => 'Secara keseluruhan, saya puas dengan penyelenggaraan pelatihan ini.',
 
-            16 => 'Saya memahami jenis data sekolah yang harus dikelola serta alur pengelolaannya (pengumpulan, verifikasi, dan pemutakhiran).',
+        16 => 'Saya memahami jenis data sekolah yang harus dikelola serta alur pengelolaannya (pengumpulan, verifikasi, dan pemutakhiran).',
 
-            17 => 'Saya mampu mempraktikkan pengelolaan data sekolah (input, verifikasi, dan pemutakhiran) sesuai ketentuan.',
+        17 => 'Saya mampu mempraktikkan pengelolaan data sekolah (input, verifikasi, dan pemutakhiran) sesuai ketentuan.',
 
-            18 => 'Saya menjadi lebih teliti dan bertanggung jawab dalam menjaga keakuratan data sekolah.',
+        18 => 'Saya menjadi lebih teliti dan bertanggung jawab dalam menjaga keakuratan data sekolah.',
 
-            19 => 'Saya memahami prosedur layanan administrasi sekolah (persuratan, pengarsipan, dan pelayanan warga sekolah) yang benar.',
+        19 => 'Saya memahami prosedur layanan administrasi sekolah (persuratan, pengarsipan, dan pelayanan warga sekolah) yang benar.',
 
-            20 => 'Saya mampu menyusun dokumen persuratan, mengelola arsip, dan melayani warga sekolah sesuai prosedur.',
+        20 => 'Saya mampu menyusun dokumen persuratan, mengelola arsip, dan melayani warga sekolah sesuai prosedur.',
 
-            21 => 'Saya menjadi lebih ramah, tertib, dan responsif dalam melayani kebutuhan warga sekolah.',
+        21 => 'Saya menjadi lebih ramah, tertib, dan responsif dalam melayani kebutuhan warga sekolah.',
 
-            22 => 'Saya memahami ketentuan administrasi keuangan dan pelaporan yang berlaku di sekolah.',
+        22 => 'Saya memahami ketentuan administrasi keuangan dan pelaporan yang berlaku di sekolah.',
 
-            23 => 'Saya mampu menyusun pembukuan, bukti transaksi, dan laporan keuangan sesuai format yang ditetapkan.',
+        23 => 'Saya mampu menyusun pembukuan, bukti transaksi, dan laporan keuangan sesuai format yang ditetapkan.',
 
-            24 => 'Saya menjadi lebih jujur, transparan, dan akuntabel dalam mengelola administrasi keuangan.',
+        24 => 'Saya menjadi lebih jujur, transparan, dan akuntabel dalam mengelola administrasi keuangan.',
 
-            25 => 'Saya memahami peran dan manfaat kolaborasi serta jejaring dengan kepala sekolah, guru, rekan sejawat, dinas, dan mitra.',
+        25 => 'Saya memahami peran dan manfaat kolaborasi serta jejaring dengan kepala sekolah, guru, rekan sejawat, dinas, dan mitra.',
 
-            26 => 'Saya mampu berkomunikasi, berkoordinasi, dan membangun jejaring kerja dengan berbagai pihak.',
+        26 => 'Saya mampu berkomunikasi, berkoordinasi, dan membangun jejaring kerja dengan berbagai pihak.',
 
-            27 => 'Saya menjadi lebih terbuka, menghargai pendapat orang lain, dan mau bekerja sama.',
+        27 => 'Saya menjadi lebih terbuka, menghargai pendapat orang lain, dan mau bekerja sama.',
 
-            28 => 'Saya memahami bahwa kemampuan dapat berkembang melalui usaha dan belajar, serta perbedaan growth mindset dengan fixed mindset.',
+        28 => 'Saya memahami bahwa kemampuan dapat berkembang melalui usaha dan belajar, serta perbedaan growth mindset dengan fixed mindset.',
 
-            29 => 'Saya mampu merumuskan tujuan pengembangan diri dan strategi menghadapi tantangan serta umpan balik dalam pekerjaan.',
+        29 => 'Saya mampu merumuskan tujuan pengembangan diri dan strategi menghadapi tantangan serta umpan balik dalam pekerjaan.',
 
-            30 => 'Saya memandang tantangan dan kesalahan sebagai peluang belajar dan bersemangat mengembangkan diri.',
+        30 => 'Saya memandang tantangan dan kesalahan sebagai peluang belajar dan bersemangat mengembangkan diri.',
 
-            31 => 'Saya memahami peran, etika, dan standar kinerja yang dituntut dari tenaga kependidikan yang profesional.',
+        31 => 'Saya memahami peran, etika, dan standar kinerja yang dituntut dari tenaga kependidikan yang profesional.',
 
-            32 => 'Saya mampu mengatur waktu dan prioritas kerja serta memanfaatkan teknologi secara profesional.',
+        32 => 'Saya mampu mengatur waktu dan prioritas kerja serta memanfaatkan teknologi secara profesional.',
 
-            33 => 'Saya berkomitmen menjaga integritas, disiplin, tanggung jawab, dan kerahasiaan data dalam bekerja.',
+        33 => 'Saya berkomitmen menjaga integritas, disiplin, tanggung jawab, dan kerahasiaan data dalam bekerja.',
 
-            34 => 'Saya menerapkan hasil pelatihan dalam pengelolaan data sekolah, yaitu memperbarui dan memverifikasi data secara berkala.',
+        34 => 'Saya menerapkan hasil pelatihan dalam pengelolaan data sekolah, yaitu memperbarui dan memverifikasi data secara berkala.',
 
-            35 => 'Saya melayani kebutuhan administrasi warga sekolah dengan lebih cepat, tertib, dan ramah.',
+        35 => 'Saya melayani kebutuhan administrasi warga sekolah dengan lebih cepat, tertib, dan ramah.',
 
-            36 => 'Saya menyusun dokumen administrasi dan laporan (termasuk laporan keuangan) tepat waktu dan sesuai format.',
+        36 => 'Saya menyusun dokumen administrasi dan laporan (termasuk laporan keuangan) tepat waktu dan sesuai format.',
 
-            37 => 'Saya berkolaborasi aktif dengan kepala sekolah, guru, rekan tenaga kependidikan, dan pihak luar (dinas, mitra jejaring) dalam menjalankan tugas.',
+        37 => 'Saya berkolaborasi aktif dengan kepala sekolah, guru, rekan tenaga kependidikan, dan pihak luar (dinas, mitra jejaring) dalam menjalankan tugas.',
 
-            38 => 'Saya memanfaatkan teknologi dalam bekerja dan menjaga keamanan serta kerahasiaan data sekolah.',
+        38 => 'Saya memanfaatkan teknologi dalam bekerja dan menjaga keamanan serta kerahasiaan data sekolah.',
 
-            39 => 'Data sekolah menjadi lebih akurat, lengkap, dan mutakhir dibandingkan sebelum pelatihan.',
+        39 => 'Data sekolah menjadi lebih akurat, lengkap, dan mutakhir dibandingkan sebelum pelatihan.',
 
-            40 => 'Waktu penyelesaian layanan administrasi menjadi lebih singkat dan keluhan layanan berkurang.',
+        40 => 'Waktu penyelesaian layanan administrasi menjadi lebih singkat dan keluhan layanan berkurang.',
 
-            41 => 'Kesalahan dan temuan pada laporan administrasi maupun keuangan berkurang.',
+        41 => 'Kesalahan dan temuan pada laporan administrasi maupun keuangan berkurang.',
 
-            42 => 'Kerja sama tim dan koordinasi antarwarga sekolah menjadi lebih baik.',
+        42 => 'Kerja sama tim dan koordinasi antarwarga sekolah menjadi lebih baik.',
 
-            43 => 'Pelatihan memberi dampak positif pada mutu layanan dan kinerja sekolah secara keseluruhan.',
+        43 => 'Pelatihan memberi dampak positif pada mutu layanan dan kinerja sekolah secara keseluruhan.',
 
-        ];
+    ];
 
-        /*
+    /*
 
-        |--------------------------------------------------------------------------
+    |--------------------------------------------------------------------------
 
-        | LEVEL DAN RENTANG BUTIR
+    | LEVEL DAN RENTANG BUTIR
 
-        |--------------------------------------------------------------------------
+    |--------------------------------------------------------------------------
 
-        */
+    */
 
-        $levels = [
+    $levels = [
 
-            1 => [
+        1 => [
 
-                'label' => 'Level I — Reaksi',
+            'label' => 'Level I — Reaksi',
 
-                'nama' => 'Reaksi (Reaction)',
+            'nama' => 'Reaksi (Reaction)',
 
-                'deskripsi' => 'Kepuasan peserta terhadap pelaksanaan pelatihan.',
+            'deskripsi' => 'Kepuasan peserta terhadap pelaksanaan pelatihan.',
 
-                'rentang' => range(1, 15),
+            'rentang' => range(1, 15),
 
-            ],
+        ],
 
-            2 => [
+        2 => [
 
-                'label' => 'Level II — Belajar',
+            'label' => 'Level II — Belajar',
 
-                'nama' => 'Belajar (Learning)',
+            'nama' => 'Belajar (Learning)',
 
-                'deskripsi' => 'Pengetahuan, keterampilan, dan sikap setelah pelatihan.',
+            'deskripsi' => 'Pengetahuan, keterampilan, dan sikap setelah pelatihan.',
 
-                'rentang' => range(16, 33),
+            'rentang' => range(16, 33),
 
-            ],
+        ],
 
-            3 => [
+        3 => [
 
-                'label' => 'Level III — Perilaku',
+            'label' => 'Level III — Perilaku',
 
-                'nama' => 'Perilaku (Behavior)',
+            'nama' => 'Perilaku (Behavior)',
 
-                'deskripsi' => 'Penerapan hasil pelatihan di tempat kerja.',
+            'deskripsi' => 'Penerapan hasil pelatihan di tempat kerja.',
 
-                'rentang' => range(34, 38),
+            'rentang' => range(34, 38),
 
-            ],
+        ],
 
-            4 => [
+        4 => [
 
-                'label' => 'Level IV — Hasil',
+            'label' => 'Level IV — Hasil',
 
-                'nama' => 'Hasil (Results)',
+            'nama' => 'Hasil (Results)',
 
-                'deskripsi' => 'Dampak penerapan hasil pelatihan bagi sekolah.',
+            'deskripsi' => 'Dampak penerapan hasil pelatihan bagi sekolah.',
 
-                'rentang' => range(39, 43),
+            'rentang' => range(39, 43),
 
-            ],
+        ],
 
-        ];
+    ];
 
-        /*
+    /*
 
-        |--------------------------------------------------------------------------
+    |--------------------------------------------------------------------------
 
-        | PERHITUNGAN SKOR
+    | PERHITUNGAN SKOR
 
-        |--------------------------------------------------------------------------
+    |--------------------------------------------------------------------------
 
-        */
+    */
 
-        $jumlahButir = 43;
+    $jabatanResponden = $tendik->jabatan_responden
+        ?? $tendik->jabatan
+        ?? '-';
 
-        $skorMaksimal = $jumlahButir * 4;
+    $isTendik = $jabatanResponden === 'Tendik';
 
-        $totalSkor = 0;
+    // Jabatan selain Tendik hanya menggunakan Level III dan IV.
+    if (!$isTendik) {
+        $levels = array_filter(
+            $levels,
+            fn($level, $nomorLevel) => in_array($nomorLevel, [3, 4], true),
+            ARRAY_FILTER_USE_BOTH
+        );
+    }
 
-        $jumlahTerisi = 0;
+    $jumlahButir = array_sum(array_map(
+        fn($level) => count($level['rentang']),
+        $levels
+    ));
 
-        $levelScores = [];
+    $skorMaksimal = $jumlahButir * 4;
+    $totalSkor = 0;
+    $jumlahTerisi = 0;
+    $levelScores = [];
+    $levelCounts = [];
+    $levelMaxScores = [];
+    $levelPersentase = [];
+    $rataRataLevel = [];
 
-        $levelCounts = [];
+    foreach ($levels as $nomorLevel => $level) {
+        $skorLevel = 0;
+        $terisiLevel = 0;
 
-        $levelMaxScores = [];
+        foreach ($level['rentang'] as $nomor) {
+            $nilai = $tendik->{'jawaban_' . $nomor};
 
-        $levelPersentase = [];
-
-        foreach ($levels as $nomorLevel => $level) {
-
-            $skorLevel = 0;
-
-            $terisiLevel = 0;
-
-            foreach ($level['rentang'] as $nomor) {
-
-                $nilai = $tendik->{'jawaban_' . $nomor};
-
-                if ($nilai !== null && $nilai !== '') {
-
-                    $skorLevel += (int) $nilai;
-
-                    $terisiLevel++;
-
-                }
-
+            if ($nilai !== null && $nilai !== '') {
+                $skorLevel += (int) $nilai;
+                $terisiLevel++;
             }
-
-            $levelScores[$nomorLevel] = $skorLevel;
-
-            $levelCounts[$nomorLevel] = $terisiLevel;
-
-            $levelMaxScores[$nomorLevel] = count($level['rentang']) * 4;
-
-            $levelPersentase[$nomorLevel] = $levelMaxScores[$nomorLevel] > 0
-
-                ? ($skorLevel / $levelMaxScores[$nomorLevel]) * 100
-
-                : 0;
-
-            $totalSkor += $skorLevel;
-
-            $jumlahTerisi += $terisiLevel;
-
         }
 
-        $persentaseTotal = $skorMaksimal > 0
+        $jumlahButirLevel = count($level['rentang']);
+        $levelScores[$nomorLevel] = $skorLevel;
+        $levelCounts[$nomorLevel] = $terisiLevel;
+        $levelMaxScores[$nomorLevel] = $jumlahButirLevel * 4;
 
-            ? ($totalSkor / $skorMaksimal) * 100
-
+        $levelPersentase[$nomorLevel] = $levelMaxScores[$nomorLevel] > 0
+            ? ($skorLevel / $levelMaxScores[$nomorLevel]) * 100
             : 0;
 
-        $rataRata = $jumlahTerisi > 0
-
-            ? $totalSkor / $jumlahTerisi
-
-            : 0;
-
-        /*
-
-         * Predikat mengikuti rentang rata-rata pada instrumen TENDIK:
-
-         * 3,26–4,00 = Sangat Baik
-
-         * 2,51–3,25 = Baik
-
-         * 1,76–2,50 = Cukup
-
-         * 1,00–1,75 = Kurang
-
-         */
-
-        $predikatHitung = match (true) {
-
-            $jumlahTerisi === 0 => 'Belum Dinilai',
-
-            $rataRata >= 3.26 => 'Sangat Baik',
-
-            $rataRata >= 2.51 => 'Baik',
-
-            $rataRata >= 1.76 => 'Cukup',
-
-            default => 'Kurang',
-
-        };
-
-        $predikat = $tendik->predikat ?: $predikatHitung;
-
-        $predikatClass = match ($predikat) {
-
-            'Sangat Baik' => 'bg-emerald-100 text-emerald-700',
-
-            'Baik' => 'bg-blue-100 text-blue-700',
-
-            'Cukup' => 'bg-amber-100 text-amber-700',
-
-            'Kurang' => 'bg-red-100 text-red-700',
-
-            default => 'bg-slate-100 text-slate-600',
-
-        };
-
-        $tanggalPengisian = $tendik->tanggal_pengisian
-
-            ?? $tendik->tanggal_evaluasi
-
-            ?? $tendik->created_at;
-
-        $namaPetugas = $tendik->nama_petugas_monev
-
-            ?? $tendik->nama_petugas
-
-            ?? '-';
-
-        $instansiPetugas = $tendik->instansi_petugas
-
-            ?? $tendik->unit_kerja_petugas
-
-            ?? $tendik->instansi
-
-            ?? '-';
-
-        $namaResponden = $tendik->nama_responden
-
-            ?? $tendik->nama
-
-            ?? '-';
-
-        $jabatanResponden = $tendik->jabatan_responden
-
-            ?? $tendik->jabatan
-
-            ?? '-';
-
-        $jabatanLainnya = $tendik->jabatan_lainnya ?? null;
-        if ($jabatanLainnya && $jabatanResponden === 'Lainnya') {
-            $jabatanResponden .= ' - ' . $jabatanLainnya;
+        // Rata-rata setiap level dihitung secara terpisah.
+        if ($terisiLevel > 0) {
+            $rataRataLevel[$nomorLevel] = $skorLevel / $terisiLevel;
         }
 
-        $lokasiMonev = $tendik->lokasi_monev ?? '-';
-        $tanggalPelaksanaan = $tendik->tanggal_pelaksanaan ?? null;
+        $totalSkor += $skorLevel;
+        $jumlahTerisi += $terisiLevel;
+    }
 
-        $satuanPendidikan = $tendik->satuan_pendidikan
+    // Nilai akhir memberikan bobot yang sama untuk setiap level
+    // yang memiliki jawaban, bukan berdasarkan jumlah butirnya.
+    $rataRata = count($rataRataLevel) > 0
+        ? array_sum($rataRataLevel) / count($rataRataLevel)
+        : 0;
 
-            ?? $tendik->nama_sekolah
+    $persentaseTotal = ($rataRata / 4) * 100;
 
-            ?? '-';
+    $predikat = match (true) {
+        $jumlahTerisi === 0 => 'Belum Dinilai',
+        $rataRata >= 3.26 => 'Sangat Baik',
+        $rataRata >= 2.51 => 'Baik',
+        $rataRata >= 1.76 => 'Cukup',
+        default => 'Kurang',
+    };
 
-        $masaKerja = $tendik->masa_kerja
+    $predikatClass = match ($predikat) {
+        'Sangat Baik' => 'bg-emerald-100 text-emerald-700',
+        'Baik' => 'bg-blue-100 text-blue-700',
+        'Cukup' => 'bg-amber-100 text-amber-700',
+        'Kurang' => 'bg-red-100 text-red-700',
+        default => 'bg-slate-100 text-slate-600',
+    };
 
-            ?? null;
+    $tanggalPengisian = $tendik->tanggal_pengisian
+        ?? $tendik->tanggal_evaluasi
+        ?? $tendik->created_at;
 
-        $namaKegiatan = $tendik->nama_pelatihan
+    $namaPetugas = $tendik->nama_petugas_monev
+        ?? $tendik->nama_petugas
+        ?? '-';
 
-            ?? $tendik->nama_kegiatan
+    $instansiPetugas = $tendik->instansi_petugas
+        ?? $tendik->unit_kerja_petugas
+        ?? $tendik->instansi
+        ?? '-';
 
-            ?? $tendik->nama_kegiatan_pelatihan
+    $namaResponden = $tendik->nama_responden
+        ?? $tendik->nama
+        ?? '-';
 
-            ?? $tendik->kegiatan
+    $jabatanLainnya = $tendik->jabatan_lainnya ?? null;
 
-            ?? '-';
+    if ($jabatanLainnya && $jabatanResponden === 'Lainnya') {
+        $jabatanResponden .= ' - ' . $jabatanLainnya;
+    }
 
-        $statusPengisianLabel = $jumlahTerisi === $jumlahButir ? 'Selesai' : 'Belum Lengkap';
+    $lokasiMonev = $tendik->lokasi_monev ?? '-';
 
-    @endphp
+    $tanggalPelaksanaan = $tendik->tanggal_pelaksanaan
+        ?? $tendik->tanggal_pengisian
+        ?? null;
+
+    $satuanPendidikan = $tendik->satuan_pendidikan
+        ?? $tendik->nama_sekolah
+        ?? '-';
+
+    $masaKerja = $tendik->masa_kerja ?? null;
+
+    $namaKegiatan = $tendik->nama_pelatihan
+        ?? $tendik->nama_kegiatan
+        ?? $tendik->nama_kegiatan_pelatihan
+        ?? $tendik->kegiatan
+        ?? '-';
+
+    $statusPengisianLabel = $jumlahTerisi === $jumlahButir
+        ? 'Selesai'
+        : 'Belum Lengkap';
+
+@endphp
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -877,7 +835,7 @@
 <body>
 
     {{-- =========================================================
-         TOOLBAR
+    TOOLBAR
     ========================================================== --}}
 
     <div class="print-toolbar no-print">
@@ -900,8 +858,7 @@
             <button type="button" onclick="window.print()" class="btn btn-print">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                     stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M6 9V2h12v7
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 9V2h12v7
                            M6 18H4a2 2 0 01-2-2v-5
                            a2 2 0 012-2h16a2 2 0 012 2v5
                            a2 2 0 01-2 2h-2
@@ -916,7 +873,7 @@
     </div>
 
     {{-- =========================================================
-         DOKUMEN
+    DOKUMEN
     ========================================================== --}}
 
     <main class="document">
@@ -973,7 +930,9 @@
 
                         <td class="label">Tanggal Pelaksanaan</td>
                         <td class="value">
-                            {{ $tendik->tanggal_pelaksanaan ? \Illuminate\Support\Carbon::parse($tendik->tanggal_pelaksanaan)->format('d/m/Y') : '-' }}
+                            {{ $tanggalPelaksanaan
+    ? \Illuminate\Support\Carbon::parse($tanggalPelaksanaan)->format('d/m/Y')
+    : '-' }}
                         </td>
                     </tr>
 
@@ -1158,4 +1117,5 @@
     </main>
 
 </body>
+
 </html>

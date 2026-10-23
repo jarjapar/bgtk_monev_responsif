@@ -7,10 +7,6 @@
 
     @php
         /* ---------- DATA TURUNAN (dihitung sekali di sini) ---------- */
-        $isHigh = $submission->kategori === 'Baik / Kategori Tinggi';
-        $jumlahTidak = max(($submission->jumlah_soal ?? 0) - ($submission->jumlah_ya ?? 0), 0);
-        $skorPersen = min((float) $submission->skor_persentase, 100);
-
         $levelNames = [1 => 'Reaction', 2 => 'Learning', 3 => 'Behavior', 4 => 'Results'];
 
         $levelDescriptions = [
@@ -26,22 +22,54 @@
 
         $answers = $submission->answers->filter(fn($a) => $a->question);
 
+        $jabatanResponden = $submission->jabatan_responden;
+
+        if ($jabatanResponden === 'Lainnya' && filled($submission->jabatan_lainnya)) {
+            $jabatanResponden .= ' — ' . $submission->jabatan_lainnya;
+        }
+
+        $isBK = $submission->jabatan_responden === 'BK';
+        $allowedLevels = $isBK ? [1, 2, 3, 4] : [3, 4];
+
+        // Hanya jawaban dari level yang berlaku untuk jabatan responden.
+        $answers = $answers->filter(
+            fn($answer) => in_array((int) $answer->question->level, $allowedLevels, true)
+        )->values();
+
         $levelStats = [];
-        foreach ($levelNames as $lv => $name) {
-            $items = $answers->filter(fn($a) => (int) $a->question->level === $lv);
+
+        foreach ($levelNames as $level => $name) {
+            if (!in_array($level, $allowedLevels, true)) {
+                continue;
+            }
+
+            $items = $answers->filter(
+                fn($answer) => (int) $answer->question->level === $level
+            );
+
             $total = $items->count();
-            $yes = $items->filter(fn($a) => (bool) $a->jawaban)->count();
-            $levelStats[$lv] = [
+            $yes = $items->filter(fn($answer) => (bool) $answer->jawaban)->count();
+
+            $levelStats[$level] = [
                 'total' => $total,
                 'yes' => $yes,
                 'pct' => $total > 0 ? round(($yes / $total) * 100, 2) : 0,
             ];
         }
 
-        $jabatanResponden = $submission->jabatan_responden;
-        if ($jabatanResponden === 'Lainnya' && filled($submission->jabatan_lainnya)) {
-            $jabatanResponden .= ' — ' . $submission->jabatan_lainnya;
-        }
+        $jumlahButirBk = $answers->count();
+        $jumlahTerisiBk = $jumlahButirBk;
+        $jumlahYaBk = $answers->filter(fn($answer) => (bool) $answer->jawaban)->count();
+        $jumlahTidak = max($jumlahButirBk - $jumlahYaBk, 0);
+
+        $skorPersen = $jumlahButirBk > 0
+            ? ($jumlahYaBk / $jumlahButirBk) * 100
+            : 0;
+
+        $isHigh = $skorPersen >= 50;
+
+        $statusPengisianLabel = $submission->status ?: 'Selesai';
+        $statusSelesai = $statusPengisianLabel === 'Selesai';
 
         $responden = [
             ['Nama Responden', $submission->nama_responden],
@@ -52,20 +80,15 @@
             ['Tanggal Pengisian', $submission->tanggal_pengisian ? $submission->tanggal_pengisian->format('d/m/Y') : null],
         ];
 
-                $petugas = [
+        $petugas = [
             ['Nama Petugas Monev', $submission->nama_petugas_monev],
             ['Instansi Petugas', $submission->instansi_petugas],
             ['Tanggal Pelaksanaan', $submission->tanggal_pelaksanaan ? $submission->tanggal_pelaksanaan->format('d/m/Y') : null],
             ['Lokasi Monev', $submission->lokasi_monev],
         ];
 
-        // Variabel untuk tampilan Identitas Pengisian (gaya Tendik)
-        $jumlahButirBk = (int) ($submission->jumlah_soal ?? $answers->count());
-        $jumlahTerisiBk = $answers->count();
-        $statusPengisianLabel = $submission->status ?: ($jumlahTerisiBk === $jumlahButirBk ? 'Selesai' : 'Belum Lengkap');
-        $statusSelesai = $statusPengisianLabel === 'Selesai';
     @endphp
-    
+
 
 
     <div class="mx-auto max-w-6xl space-y-6">
@@ -142,14 +165,14 @@
                 <p class="text-sm font-medium text-slate-500">Total Skor</p>
 
                 <div class="mt-3 flex items-baseline gap-2">
-                    <span class="text-4xl font-bold tracking-tight text-slate-800">{{ $submission->jumlah_ya }}</span>
-                    <span class="text-lg font-medium text-slate-400">/ {{ $submission->jumlah_soal }}</span>
+                    <span class="text-4xl font-bold tracking-tight text-slate-800">{{ $jumlahYaBk }}</span>
+                    <span class="text-lg font-medium text-slate-400">/ {{ $jumlahButirBk }}</span>
                 </div>
 
                 <div class="mt-4 flex flex-wrap gap-2">
                     <span
                         class="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                        {{ $submission->jumlah_ya }} Ya
+                        {{ $jumlahYaBk }} Ya
                     </span>
                     <span
                         class="inline-flex items-center rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-700">
@@ -157,7 +180,7 @@
                     </span>
                 </div>
 
-                <p class="mt-4 text-xs text-slate-400">Akumulasi skor dari {{ $submission->jumlah_soal }} indikator.</p>
+                <p class="mt-4 text-xs text-slate-400">Akumulasi skor dari {{ $jumlahButirBk }} indikator.</p>
             </div>
 
 
@@ -167,7 +190,7 @@
 
                 <div class="mt-3 flex items-baseline gap-1">
                     <span class="text-4xl font-bold tracking-tight text-blue-600">
-                        {{ number_format($submission->skor_persentase, 2, ',', '.') }}
+                        {{ number_format($skorPersen, 2, ',', '.') }}
                     </span>
                     <span class="text-lg font-medium text-slate-400">%</span>
                 </div>
@@ -209,73 +232,69 @@
         {{-- =========================================================
         IDENTITAS PENGISIAN
         ========================================================== --}}
-        <section class="rounded-2xl border border-slate-200 bg-white shadow-sm">
-
-            <div class="border-b border-slate-200 px-6 py-5">
-                <h2 class="text-lg font-bold text-slate-900">Identitas Pengisian</h2>
-                <p class="mt-1 text-sm text-slate-500">
-                    Informasi responden dan petugas Monev.
-                </p>
+        <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div class="border-b border-slate-200 bg-slate-50 px-6 py-5">
+                <h2 class="text-lg font-bold text-slate-800">A. Identitas Petugas Monev</h2>
+                <p class="mt-1 text-sm text-slate-500">Informasi petugas pelaksana monitoring dan evaluasi.</p>
             </div>
 
             <div class="grid grid-cols-1 gap-x-8 gap-y-5 p-6 md:grid-cols-2">
-
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Nama Petugas Monev</p>
                     <p class="mt-1 font-semibold text-slate-800">{{ $submission->nama_petugas_monev ?: '-' }}</p>
                 </div>
-
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Instansi Petugas</p>
                     <p class="mt-1 font-semibold text-slate-800">{{ $submission->instansi_petugas ?: '-' }}</p>
                 </div>
-
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Lokasi Monev</p>
                     <p class="mt-1 font-semibold text-slate-800">{{ $submission->lokasi_monev ?: '-' }}</p>
                 </div>
-
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Tanggal Pelaksanaan</p>
                     <p class="mt-1 font-semibold text-slate-800">
                         {{ $submission->tanggal_pelaksanaan ? $submission->tanggal_pelaksanaan->format('d/m/Y') : '-' }}
                     </p>
                 </div>
+            </div>
+        </section>
 
+        <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div class="border-b border-slate-200 bg-slate-50 px-6 py-5">
+                <h2 class="text-lg font-bold text-slate-800">B. Identitas Responden</h2>
+                <p class="mt-1 text-sm text-slate-500">Identitas responden yang mengisi instrumen BK.</p>
+            </div>
+
+            <div class="grid grid-cols-1 gap-x-8 gap-y-5 p-6 md:grid-cols-2">
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Nama Responden</p>
                     <p class="mt-1 font-semibold text-slate-800">{{ $submission->nama_responden ?: '-' }}</p>
                 </div>
-
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Jabatan Responden</p>
                     <p class="mt-1 font-semibold text-slate-800">{{ $jabatanResponden ?: '-' }}</p>
                 </div>
-
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Satuan Pendidikan</p>
                     <p class="mt-1 font-semibold text-slate-800">{{ $submission->satuan_pendidikan ?: '-' }}</p>
                 </div>
-
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Masa Kerja</p>
                     <p class="mt-1 font-semibold text-slate-800">
                         {{ $submission->masa_kerja !== null && $submission->masa_kerja !== '' ? $submission->masa_kerja . ' tahun' : '-' }}
                     </p>
                 </div>
-
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Nama Kegiatan/Pelatihan</p>
                     <p class="mt-1 font-semibold text-slate-800">{{ $submission->nama_pelatihan ?: '-' }}</p>
                 </div>
-
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Tanggal Pengisian</p>
                     <p class="mt-1 font-semibold text-slate-800">
                         {{ $submission->tanggal_pengisian ? $submission->tanggal_pengisian->format('d/m/Y') : '-' }}
                     </p>
                 </div>
-
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Status Pengisian</p>
                     <div class="mt-1">
@@ -285,7 +304,6 @@
                         </span>
                     </div>
                 </div>
-
             </div>
         </section>
 
@@ -301,9 +319,9 @@
 
             <div class="grid grid-cols-1 gap-4 p-6 sm:grid-cols-2 lg:grid-cols-4">
 
-                @foreach ($levelNames as $level => $levelName)
+                @foreach ($levelStats as $level => $st)
                     @php
-                        $st = $levelStats[$level];
+                        $levelName = $levelNames[$level];
                         $style = $levelStyles[$level];
                     @endphp
 
@@ -350,7 +368,7 @@
         <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
 
             <div class="border-b border-slate-200 px-6 py-5">
-                <h2 class="text-lg font-bold text-slate-800">Detail Penilaian {{ $submission->jumlah_soal }} Indikator</h2>
+                <h2 class="text-lg font-bold text-slate-800">Detail Penilaian {{ $jumlahButirBk }} Indikator</h2>
                 <p class="mt-1 text-sm text-slate-500">Nilai setiap indikator berdasarkan hasil pengisian instrumen BK.</p>
             </div>
 

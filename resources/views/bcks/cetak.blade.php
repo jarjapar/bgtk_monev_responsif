@@ -1,13 +1,85 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>
-        Hasil Monev BCKS -
-        {{ $bcksPengisian->nama_bcks }}
-    </title>
+    <title>Hasil Monev BCKS - {{ $bcksPengisian->nama_bcks }}</title>
+
+    @php
+        /*
+        |--------------------------------------------------------------------------
+        | Konfigurasi dan filter jawaban
+        |--------------------------------------------------------------------------
+        */
+
+        $levels = config('bcks.instrumen.levels', []);
+
+        $statusResponden = $bcksPengisian->status_responden ?? '';
+        $isBcks = $statusResponden === 'BCKS';
+
+        $levelAktif = $isBcks
+            ? ['Reaction', 'Learning', 'Behavior', 'Results']
+            : ['Behavior', 'Results'];
+
+        $jawabanSemua = $bcksPengisian->jawaban ?? collect();
+
+        $jawabanBerlaku = $jawabanSemua
+            ->filter(fn ($item) => in_array($item->level, $levelAktif, true))
+            ->values();
+
+        $jumlahIndikatorBerlaku = $isBcks ? 27 : 19;
+        $skorMaksimum = $jumlahIndikatorBerlaku * 4;
+        $totalSkorAktual = (int) $jawabanBerlaku->sum('skor');
+
+        $nilaiAkhirAktual = $skorMaksimum > 0
+            ? round(($totalSkorAktual / $skorMaksimum) * 100, 2)
+            : 0;
+
+        $predikat = $bcksPengisian->predikat ?: '-';
+
+        $levelLabel = [
+            'Reaction' => 'Level 1 — Reaction',
+            'Learning' => 'Level 2 — Learning',
+            'Behavior' => 'Level 3 — Behavior',
+            'Results' => 'Level 4 — Results',
+        ];
+
+        $levelDeskripsi = [
+            'Reaction' => 'Reaksi peserta terhadap pelaksanaan pelatihan.',
+            'Learning' => 'Perubahan pemahaman dan kesiapan peserta setelah pelatihan.',
+            'Behavior' => 'Perubahan perilaku dan penerapan hasil pelatihan di sekolah.',
+            'Results' => 'Dampak penerapan hasil pelatihan terhadap sekolah.',
+        ];
+
+        $levelMaksimum = [
+            'Reaction' => 16,
+            'Learning' => 16,
+            'Behavior' => 48,
+            'Results' => 28,
+        ];
+
+        $levelScores = array_fill_keys(array_keys($levelLabel), 0);
+        $levelCounts = array_fill_keys(array_keys($levelLabel), 0);
+
+        foreach ($jawabanBerlaku as $item) {
+            if (array_key_exists($item->level, $levelScores)) {
+                $levelScores[$item->level] += (int) $item->skor;
+                $levelCounts[$item->level]++;
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Indeks jawaban berdasarkan nomor indikator global
+        |--------------------------------------------------------------------------
+        */
+
+        $jawabanByNomor = $jawabanBerlaku->keyBy(
+            fn ($item) => (string) $item->nomor_indikator
+        );
+    @endphp
 
     <style>
         * {
@@ -23,10 +95,6 @@
             font-size: 13px;
             line-height: 1.5;
         }
-
-        /* =========================
-           TOOLBAR
-        ========================= */
 
         .no-print {
             display: block;
@@ -73,7 +141,7 @@
 
         .btn-back {
             color: #334155;
-            background: #ffffff;
+            background: #fff;
             border-color: #cbd5e1;
         }
 
@@ -83,33 +151,23 @@
         }
 
         .btn-print {
-            color: #ffffff;
+            color: #fff;
             background: #2563eb;
             border-color: #2563eb;
-            box-shadow: 0 2px 5px rgba(37, 99, 235, 0.18);
         }
 
         .btn-print:hover {
             background: #1d4ed8;
-            border-color: #1d4ed8;
         }
-
-        /* =========================
-           DOKUMEN A4
-        ========================= */
 
         .document {
             width: 210mm;
             min-height: 297mm;
             margin: 0 auto 30px;
             padding: 18mm 16mm;
-            background: #ffffff;
+            background: #fff;
             box-shadow: 0 5px 25px rgba(15, 23, 42, 0.10);
         }
-
-        /* =========================
-           HEADER
-        ========================= */
 
         .document-header {
             text-align: center;
@@ -141,10 +199,6 @@
             font-size: 12px;
         }
 
-        /* =========================
-           SECTION
-        ========================= */
-
         .section {
             margin-top: 20px;
         }
@@ -159,10 +213,6 @@
             font-weight: 700;
         }
 
-        /* =========================
-           IDENTITY
-        ========================= */
-
         .identity-table {
             width: 100%;
             border-collapse: collapse;
@@ -173,6 +223,7 @@
             border: 1px solid #dbe2ea;
             padding: 7px 9px;
             vertical-align: top;
+            overflow-wrap: anywhere;
         }
 
         .identity-table .label {
@@ -187,10 +238,6 @@
             color: #0f172a;
         }
 
-        /* =========================
-           SUMMARY
-        ========================= */
-
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -203,7 +250,7 @@
             border-radius: 8px;
             padding: 12px;
             text-align: center;
-            background: #ffffff;
+            background: #fff;
         }
 
         .summary-label {
@@ -224,22 +271,26 @@
             color: #2563eb;
         }
 
-        /* =========================
-           LEVEL
-        ========================= */
-
         .level-block {
             margin-top: 16px;
-            page-break-inside: avoid;
         }
 
         .level-title {
             padding: 8px 10px;
             margin-bottom: 0;
             background: #1e3a8a;
-            color: #ffffff;
+            color: #fff;
             font-size: 12px;
             font-weight: 700;
+        }
+
+        .level-description {
+            padding: 7px 10px;
+            border: 1px solid #cbd5e1;
+            border-bottom: 0;
+            color: #475569;
+            font-size: 10px;
+            background: #f8fafc;
         }
 
         .indicator-table {
@@ -253,6 +304,7 @@
             border: 1px solid #cbd5e1;
             padding: 6px 7px;
             vertical-align: top;
+            overflow-wrap: anywhere;
         }
 
         .indicator-table th {
@@ -288,43 +340,18 @@
             text-align: center;
         }
 
-        /* =========================
-           OPEN QUESTIONS
-        ========================= */
-
-        .open-question {
-            margin-top: 12px;
-            border: 1px solid #dbe2ea;
+        .level-block,
+        .summary-card,
+        .signature-section {
+            break-inside: avoid;
             page-break-inside: avoid;
         }
-
-        .open-question-title {
-            padding: 7px 9px;
-            background: #f8fafc;
-            color: #334155;
-            font-weight: 700;
-            font-size: 11px;
-            border-bottom: 1px solid #dbe2ea;
-        }
-
-        .open-question-answer {
-            min-height: 55px;
-            padding: 9px;
-            color: #475569;
-            font-size: 11px;
-            white-space: pre-line;
-        }
-
-        /* =========================
-           TANDA TANGAN
-        ========================= */
 
         .signature-section {
             margin-top: 35px;
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 40px;
-            page-break-inside: avoid;
         }
 
         .signature-box {
@@ -346,11 +373,8 @@
             margin-top: 5px;
             font-weight: 700;
             font-size: 11px;
+            overflow-wrap: anywhere;
         }
-
-        /* =========================
-           FOOTER
-        ========================= */
 
         .document-footer {
             margin-top: 25px;
@@ -360,10 +384,6 @@
             color: #94a3b8;
             font-size: 9px;
         }
-
-        /* =========================
-           RESPONSIVE SCREEN
-        ========================= */
 
         @media screen and (max-width: 900px) {
             .print-toolbar {
@@ -421,21 +441,16 @@
             }
         }
 
-        /* =========================
-           PRINT
-        ========================= */
-
         @page {
             size: A4;
             margin: 10mm;
         }
 
         @media print {
-
             html,
             body {
-                width: 210mm;
-                background: #ffffff;
+                width: auto;
+                background: #fff;
             }
 
             body {
@@ -458,40 +473,31 @@
                 margin-top: 0;
             }
 
-            .section {
-                break-inside: auto;
-            }
-
-            .level-block {
-                break-inside: avoid;
-            }
-
-            .open-question {
-                break-inside: avoid;
-            }
-
-            .signature-section {
-                break-inside: avoid;
+            .level-title,
+            .section-title,
+            .indicator-table th,
+            .identity-table .label,
+            .level-description {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
 
             .level-title {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
+                background: #1e3a8a !important;
+                color: #fff !important;
             }
 
             .section-title {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
+                background: #eff6ff !important;
             }
 
             .indicator-table th {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
+                background: #f1f5f9 !important;
             }
 
-            .identity-table .label {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
+            .identity-table .label,
+            .level-description {
+                background: #f8fafc !important;
             }
         }
     </style>
@@ -499,82 +505,38 @@
 
 <body>
 
-    {{-- =========================================================
-         TOOLBAR
-    ========================================================== --}}
-
+    {{-- Toolbar --}}
     <div class="print-toolbar no-print">
-
         <div class="toolbar-left">
-
-            <a
-                href="{{ route('bcks.show', $bcksPengisian) }}"
-                class="btn btn-back"
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M15 19l-7-7 7-7"
-                    />
+            <a href="{{ route('bcks.show', $bcksPengisian) }}" class="btn btn-back">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M15 19l-7-7 7-7" />
                 </svg>
-
                 Kembali
             </a>
-
         </div>
 
         <div class="toolbar-right">
-
-            <button
-                type="button"
-                onclick="window.print()"
-                class="btn btn-print"
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M6 9V2h12v7
-                           M6 18H4a2 2 0 01-2-2v-5
-                           a2 2 0 012-2h16a2 2 0 012 2v5
-                           a2 2 0 01-2 2h-2
-                           M6 14h12v8H6v-8z"
-                    />
+            <button type="button" onclick="window.print()" class="btn btn-print">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z" />
                 </svg>
-
                 Cetak Hasil
             </button>
-
         </div>
-
     </div>
 
-
-    {{-- =========================================================
-         DOKUMEN
-    ========================================================== --}}
-
+    {{-- Dokumen --}}
     <main class="document">
 
-        {{-- HEADER --}}
-
+        {{-- Header --}}
         <header class="document-header">
-
             <div class="institution">
-                BALAI GURU DAN TENAGA KEPENDIDIKAN
+                Balai Guru dan Tenaga Kependidikan
             </div>
 
             <h1 class="document-title">
@@ -584,288 +546,218 @@
             <div class="document-subtitle">
                 Instrumen Monitoring dan Evaluasi Program BCKS
             </div>
-
         </header>
 
-
-        {{-- =====================================================
-             IDENTITAS
-        ====================================================== --}}
-
+        {{-- A. Identitas --}}
         <section class="section">
-
-            <h2 class="section-title">
-                A. Identitas Pengisian
-            </h2>
+            <h2 class="section-title">A. Identitas Pengisian</h2>
 
             <table class="identity-table">
-
                 <tbody>
-
                     <tr>
                         <td class="label">Nama BCKS</td>
-                        <td class="value">
-                            {{ $bcksPengisian->nama_bcks ?: '-' }}
-                        </td>
-
+                        <td class="value">{{ $bcksPengisian->nama_bcks ?: '-' }}</td>
                         <td class="label">Unit Kerja</td>
-                        <td class="value">
-                            {{ $bcksPengisian->unit_kerja ?: '-' }}
-                        </td>
+                        <td class="value">{{ $bcksPengisian->unit_kerja ?: '-' }}</td>
                     </tr>
 
                     <tr>
                         <td class="label">Angkatan Pelatihan BCKS</td>
-                        <td class="value">
-                            {{ $bcksPengisian->angkatan_pelatihan ?: '-' }}
-                        </td>
-
+                        <td class="value">{{ $bcksPengisian->angkatan_pelatihan ?: '-' }}</td>
                         <td class="label">Nama Responden</td>
-                        <td class="value">
-                            {{ $bcksPengisian->nama_responden ?: '-' }}
-                        </td>
+                        <td class="value">{{ $bcksPengisian->nama_responden ?: '-' }}</td>
                     </tr>
 
                     <tr>
                         <td class="label">Unit Kerja Responden</td>
-                        <td class="value">
-                            {{ $bcksPengisian->unit_kerja_responden ?: '-' }}
-                        </td>
-
+                        <td class="value">{{ $bcksPengisian->unit_kerja_responden ?: '-' }}</td>
                         <td class="label">Status Responden</td>
-                        <td class="value">
-                            {{ $bcksPengisian->status_responden ?: '-' }}
-                        </td>
+                        <td class="value">{{ $statusResponden ?: '-' }}</td>
                     </tr>
 
                     <tr>
                         <td class="label">Nama Petugas Monev</td>
-                        <td class="value">
-                            {{ $bcksPengisian->nama_petugas_monev ?: '-' }}
-                        </td>
-
+                        <td class="value">{{ $bcksPengisian->nama_petugas_monev ?: '-' }}</td>
                         <td class="label">Unit Kerja Petugas</td>
-                        <td class="value">
-                            {{ $bcksPengisian->unit_kerja_petugas ?: '-' }}
-                        </td>
+                        <td class="value">{{ $bcksPengisian->unit_kerja_petugas ?: '-' }}</td>
                     </tr>
 
                     <tr>
                         <td class="label">Tanggal Evaluasi</td>
                         <td class="value" colspan="3">
-                            @if ($bcksPengisian->tanggal_evaluasi)
-                                {{ $bcksPengisian->tanggal_evaluasi->format('d/m/Y') }}
-                            @else
-                                -
-                            @endif
+                            {{ $bcksPengisian->tanggal_evaluasi?->format('d/m/Y') ?? '-' }}
                         </td>
                     </tr>
-
                 </tbody>
-
             </table>
-
         </section>
 
-
-        {{-- =====================================================
-             RINGKASAN NILAI
-        ====================================================== --}}
-
+        {{-- B. Ringkasan --}}
         <section class="section">
-
-            <h2 class="section-title">
-                B. Ringkasan Hasil Evaluasi
-            </h2>
+            <h2 class="section-title">B. Ringkasan Hasil Evaluasi</h2>
 
             <div class="summary-grid">
-
                 <div class="summary-card">
-
-                    <div class="summary-label">
-                        Total Skor
-                    </div>
-
+                    <div class="summary-label">Total Skor</div>
                     <div class="summary-value">
-                        {{ $bcksPengisian->total_skor }} / 108
+                        {{ $totalSkorAktual }} / {{ $skorMaksimum }}
                     </div>
-
+                    <div class="summary-label" style="margin-top: 5px;">
+                        {{ $jumlahIndikatorBerlaku }} indikator
+                    </div>
                 </div>
 
-
                 <div class="summary-card">
-
-                    <div class="summary-label">
-                        Nilai Akhir
-                    </div>
-
+                    <div class="summary-label">Nilai Akhir</div>
                     <div class="summary-value">
-                        {{ number_format($bcksPengisian->nilai_akhir, 2, ',', '.') }}
+                        {{ number_format($nilaiAkhirAktual, 2, ',', '.') }}%
                     </div>
-
                 </div>
 
-
                 <div class="summary-card">
-
-                    <div class="summary-label">
-                        Predikat
-                    </div>
-
+                    <div class="summary-label">Predikat</div>
                     <div class="summary-value summary-predikat">
-                        {{ $bcksPengisian->predikat ?: '-' }}
+                        {{ $predikat }}
                     </div>
-
                 </div>
-
             </div>
-
         </section>
 
-
-        {{-- =====================================================
-             INDIKATOR 27
-        ====================================================== --}}
-
+        {{-- C. Rekap level --}}
         <section class="section">
+            <h2 class="section-title">C. Rekapitulasi Berdasarkan Level</h2>
 
+            <table class="indicator-table">
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">Level</th>
+                        <th style="width: 40%;">Deskripsi</th>
+                        <th style="width: 15%;">Skor</th>
+                        <th style="width: 20%;">Persentase</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($levelAktif as $level)
+                        @php
+                            $maksimalLevelAktif = $levelMaksimum[$level] ?? 0;
+                            $skorLevel = $levelScores[$level] ?? 0;
+                            $persentaseLevel = $maksimalLevelAktif > 0
+                                ? ($skorLevel / $maksimalLevelAktif) * 100
+                                : 0;
+                        @endphp
+
+                        <tr>
+                            <td>{{ $levelLabel[$level] }}</td>
+                            <td>{{ $levelDeskripsi[$level] }}</td>
+                            <td style="text-align: center;">
+                                {{ $skorLevel }} / {{ $maksimalLevelAktif }}
+                            </td>
+                            <td style="text-align: center;">
+                                {{ number_format($persentaseLevel, 2, ',', '.') }}%
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </section>
+
+        {{-- D. Detail indikator --}}
+        <section class="section">
             <h2 class="section-title">
-                C. Hasil Penilaian Indikator
+                D. Hasil Penilaian {{ $jumlahIndikatorBerlaku }} Indikator
             </h2>
 
             @php
-                $levels = config('bcks.instrumen.levels', []);
-
-                $jawabanByNomor = $bcksPengisian
-                    ->jawaban
-                    ->keyBy('nomor_indikator');
-
+                /*
+                 * Nomor global harus tetap bertambah untuk semua level,
+                 * termasuk level yang disembunyikan, agar nomor indikator
+                 * yang tampil tetap cocok dengan data database.
+                 */
                 $nomorGlobal = 0;
             @endphp
 
-
             @foreach ($levels as $levelKey => $level)
+                @php
+                    $namaLevel = $levelKey;
 
-                <div class="level-block">
+                    if (!in_array($namaLevel, $levelAktif, true)) {
+                        $nomorGlobal += count($level['indikator'] ?? []);
+                    }
+                @endphp
 
-                    <div class="level-title">
-                        {{ $level['label'] }}
-                    </div>
+                @if (in_array($namaLevel, $levelAktif, true))
+                    <div class="level-block">
+                        <div class="level-title">
+                            {{ $levelLabel[$namaLevel] ?? ($level['label'] ?? $namaLevel) }}
+                        </div>
 
+                        <div class="level-description">
+                            {{ $levelDeskripsi[$namaLevel] ?? '' }}
+                        </div>
 
-                    <table class="indicator-table">
-
-                        <thead>
-
-                            <tr>
-                                <th class="number">
-                                    No.
-                                </th>
-
-                                <th class="question">
-                                    Indikator Penilaian
-                                </th>
-
-                                <th class="score">
-                                    Skor
-                                </th>
-
-                                <th class="maximum">
-                                    Maks.
-                                </th>
-                            </tr>
-
-                        </thead>
-
-
-                        <tbody>
-
-                            @foreach ($level['indikator'] as $indikator)
-
-                                @php
-                                    $nomorGlobal++;
-
-                                    $jawaban = $jawabanByNomor->get(
-                                        $nomorGlobal
-                                    );
-                                @endphp
-
+                        <table class="indicator-table">
+                            <thead>
                                 <tr>
-
-                                    <td class="number">
-                                        {{ $indikator['kode'] }}
-                                    </td>
-
-                                    <td class="question">
-                                        {{ $indikator['pertanyaan'] }}
-                                    </td>
-
-                                    <td class="score">
-                                        @if ($jawaban)
-                                            {{ $jawaban->skor }}
-                                        @else
-                                            -
-                                        @endif
-                                    </td>
-
-                                    <td class="maximum">
-                                        4
-                                    </td>
-
+                                    <th class="number">No.</th>
+                                    <th class="question">Indikator Penilaian</th>
+                                    <th class="score">Skor</th>
+                                    <th class="maximum">Maks.</th>
                                 </tr>
+                            </thead>
 
-                            @endforeach
+                            <tbody>
+                                @foreach ($level['indikator'] ?? [] as $indikator)
+                                    @php
+                                        $nomorGlobal++;
 
-                        </tbody>
+                                        $jawabanItem = $jawabanByNomor->get(
+                                            (string) $nomorGlobal
+                                        );
+                                    @endphp
 
-                    </table>
+                                    <tr>
+                                        <td class="number">
+                                            {{ $indikator['kode'] ?? $nomorGlobal }}
+                                        </td>
 
-                </div>
+                                        <td class="question">
+                                            {{ $indikator['pertanyaan'] ?? '-' }}
+                                        </td>
 
+                                        <td class="score">
+                                            {{ $jawabanItem ? $jawabanItem->skor : '-' }}
+                                        </td>
+
+                                        <td class="maximum">4</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
             @endforeach
-
         </section>
 
-        {{-- =====================================================
-             TANDA TANGAN
-        ====================================================== --}}
-
+        {{-- Tanda tangan --}}
         <section class="signature-section">
-
             <div class="signature-box">
-
-                <div class="signature-title">
-                    Responden
-                </div>
-
+                <div class="signature-title">Responden</div>
                 <div class="signature-line"></div>
-
                 <div class="signature-name">
                     {{ $bcksPengisian->nama_responden ?: '-' }}
                 </div>
-
             </div>
 
-
             <div class="signature-box">
-
-                <div class="signature-title">
-                    Petugas Monev
-                </div>
-
+                <div class="signature-title">Petugas Monev</div>
                 <div class="signature-line"></div>
-
                 <div class="signature-name">
                     {{ $bcksPengisian->nama_petugas_monev ?: '-' }}
                 </div>
-
             </div>
-
         </section>
 
-
-        {{-- FOOTER --}}
-
+        {{-- Footer --}}
         <footer class="document-footer">
             Dokumen hasil Monitoring dan Evaluasi BCKS
         </footer>

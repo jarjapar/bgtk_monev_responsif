@@ -194,207 +194,119 @@
 
         */
 
-        $jumlahButir = 43;
+        $jabatanResponden = $tendik->jabatan_responden
+            ?? $tendik->jabatan
+            ?? '';
+
+        $isTendik = $jabatanResponden === 'Tendik';
+
+        // Tendik menggunakan Level 1-4.
+        // Jabatan lainnya hanya menggunakan Level 3-4.
+        if (!$isTendik) {
+            $levels = array_filter(
+                $levels,
+                fn($level, $nomorLevel) => in_array($nomorLevel, [3, 4], true),
+                ARRAY_FILTER_USE_BOTH
+            );
+        }
+
+        $jumlahButir = array_sum(
+            array_map(
+                fn($level) => count($level['rentang']),
+                $levels
+            )
+        );
 
         $skorMaksimal = $jumlahButir * 4;
-
         $totalSkor = 0;
-
         $jumlahTerisi = 0;
 
         $levelScores = [];
-
         $levelCounts = [];
-
         $levelMaxScores = [];
-
         $levelPersentase = [];
 
-
-
         foreach ($levels as $nomorLevel => $level) {
-
             $skorLevel = 0;
-
             $terisiLevel = 0;
 
-
-
             foreach ($level['rentang'] as $nomor) {
-
                 $nilai = $tendik->{'jawaban_' . $nomor};
 
-
-
                 if ($nilai !== null && $nilai !== '') {
-
                     $skorLevel += (int) $nilai;
-
                     $terisiLevel++;
-
                 }
-
             }
 
-
-
             $levelScores[$nomorLevel] = $skorLevel;
-
             $levelCounts[$nomorLevel] = $terisiLevel;
-
             $levelMaxScores[$nomorLevel] = count($level['rentang']) * 4;
 
             $levelPersentase[$nomorLevel] = $levelMaxScores[$nomorLevel] > 0
-
                 ? ($skorLevel / $levelMaxScores[$nomorLevel]) * 100
-
                 : 0;
 
-
-
             $totalSkor += $skorLevel;
-
             $jumlahTerisi += $terisiLevel;
-
         }
 
-
-
         $persentaseTotal = $skorMaksimal > 0
-
             ? ($totalSkor / $skorMaksimal) * 100
-
             : 0;
-
-
 
         $rataRata = $jumlahTerisi > 0
-
             ? $totalSkor / $jumlahTerisi
-
             : 0;
 
-
-
-        /*
-
-         * Predikat mengikuti rentang rata-rata pada instrumen TENDIK:
-
-         * 3,26–4,00 = Sangat Baik
-
-         * 2,51–3,25 = Baik
-
-         * 1,76–2,50 = Cukup
-
-         * 1,00–1,75 = Kurang
-
-         */
-
-        $predikatHitung = match (true) {
-
+        $predikat = match (true) {
             $jumlahTerisi === 0 => 'Belum Dinilai',
-
             $rataRata >= 3.26 => 'Sangat Baik',
-
             $rataRata >= 2.51 => 'Baik',
-
             $rataRata >= 1.76 => 'Cukup',
-
             default => 'Kurang',
-
         };
-
-
-
-        $predikat = $tendik->predikat ?: $predikatHitung;
-
-
 
         $predikatClass = match ($predikat) {
-
             'Sangat Baik' => 'bg-emerald-100 text-emerald-700',
-
             'Baik' => 'bg-blue-100 text-blue-700',
-
             'Cukup' => 'bg-amber-100 text-amber-700',
-
             'Kurang' => 'bg-red-100 text-red-700',
-
             default => 'bg-slate-100 text-slate-600',
-
         };
 
-
-
         $tanggalPengisian = $tendik->tanggal_pengisian
-
             ?? $tendik->tanggal_evaluasi
-
             ?? $tendik->created_at;
 
-
-
         $namaPetugas = $tendik->nama_petugas_monev
-
             ?? $tendik->nama_petugas
-
             ?? '-';
-
-
 
         $instansiPetugas = $tendik->instansi_petugas
-
             ?? $tendik->unit_kerja_petugas
-
             ?? $tendik->instansi
-
             ?? '-';
-
-
 
         $namaResponden = $tendik->nama_responden
-
             ?? $tendik->nama
-
             ?? '-';
-
-
-
-        $jabatanResponden = $tendik->jabatan_responden
-
-            ?? $tendik->jabatan
-
-            ?? '-';
-
-
 
         $satuanPendidikan = $tendik->satuan_pendidikan
-
             ?? $tendik->nama_sekolah
-
             ?? '-';
 
-
-
-        $masaKerja = $tendik->masa_kerja
-
-            ?? null;
-
-
+        $masaKerja = $tendik->masa_kerja ?? null;
 
         $namaKegiatan = $tendik->nama_pelatihan
-
             ?? $tendik->nama_kegiatan
-
             ?? $tendik->nama_kegiatan_pelatihan
-
             ?? $tendik->kegiatan
-
             ?? '-';
 
-
-
-        $statusPengisianLabel = $jumlahTerisi === $jumlahButir ? 'Selesai' : 'Belum Lengkap';
+        $statusPengisianLabel = $jumlahTerisi === $jumlahButir
+            ? 'Selesai'
+            : 'Belum Lengkap';
 
     @endphp
 
@@ -599,48 +511,34 @@
 
 
 
-        {{-- Identitas pengisian --}}
+        {{-- A. Identitas Petugas Monev --}}
 
         <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
 
             <div class="border-b border-slate-200 px-6 py-5">
 
-                <h2 class="text-lg font-bold text-slate-900">Identitas Pengisian</h2>
+                <h2 class="text-lg font-bold text-slate-900">A. Identitas Petugas Monev</h2>
 
                 <p class="mt-1 text-sm text-slate-500">
 
-                    Informasi responden dan petugas Monev.
+                    Identitas petugas yang melakukan monitoring dan evaluasi.
 
                 </p>
 
             </div>
 
-
-
             <div class="grid grid-cols-1 gap-x-8 gap-y-5 p-6 md:grid-cols-2">
 
-
-
                 <div>
-
                     <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Nama Petugas Monev</p>
-
                     <p class="mt-1 font-semibold text-slate-800">{{ $namaPetugas }}</p>
-
                 </div>
-
-
 
                 <div>
-
                     <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Instansi Petugas</p>
-
                     <p class="mt-1 font-semibold text-slate-800">{{ $instansiPetugas }}</p>
-
                 </div>
 
-
-                {{-- Lokasi Monev --}}
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Lokasi Monev</p>
                     <p class="mt-1 font-semibold text-slate-800">
@@ -648,93 +546,80 @@
                     </p>
                 </div>
 
-                {{-- Tanggal Pelaksanaan --}}
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Tanggal Pelaksanaan</p>
                     <p class="mt-1 font-semibold text-slate-800">
                         {{ $tendik->tanggal_pengisian
-                             ? \Carbon\Carbon::parse($tendik->tanggal_pengisian)->format('d/m/Y')
-                             : '-' }}
+        ? \Carbon\Carbon::parse($tendik->tanggal_pengisian)->format('d/m/Y')
+        : '-' }}
                     </p>
                 </div>
 
-                <div>
+            </div>
 
+        </div>
+
+        {{-- B. Identitas Responden --}}
+
+        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+
+            <div class="border-b border-slate-200 px-6 py-5">
+
+                <h2 class="text-lg font-bold text-slate-900">B. Identitas Responden</h2>
+
+                <p class="mt-1 text-sm text-slate-500">
+
+                    Identitas responden yang mengisi instrumen.
+
+                </p>
+
+            </div>
+
+            <div class="grid grid-cols-1 gap-x-8 gap-y-5 p-6 md:grid-cols-2">
+
+                <div>
                     <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Nama Responden</p>
-
                     <p class="mt-1 font-semibold text-slate-800">{{ $namaResponden }}</p>
-
                 </div>
 
                 <div>
-
-                    <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Jabatan Responden</p>
-
-                    <p class="mt-1 font-semibold text-slate-800">{{ $jabatanResponden }}</p>
-
+                    <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Jabatan</p>
+                    <p class="mt-1 font-semibold text-slate-800">{{ $jabatanResponden ?: '-' }}</p>
                 </div>
-                <div>
 
+                <div>
                     <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Satuan Pendidikan</p>
-
                     <p class="mt-1 font-semibold text-slate-800">{{ $satuanPendidikan }}</p>
-
                 </div>
 
                 <div>
-
-                    <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Masa Kerja</p>
-
+                    <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Masa Kerja (tahun)</p>
                     <p class="mt-1 font-semibold text-slate-800">
-
                         {{ is_numeric($masaKerja) ? $masaKerja . ' tahun' : ($masaKerja ?: '-') }}
-
                     </p>
-
                 </div>
 
                 <div>
-
                     <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Nama Kegiatan/Pelatihan</p>
-
                     <p class="mt-1 font-semibold text-slate-800">{{ $namaKegiatan }}</p>
-
                 </div>
 
-
-
                 <div>
-
                     <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Tanggal Pengisian</p>
-
                     <p class="mt-1 font-semibold text-slate-800">
-
                         {{ $tanggalPengisian ? \Illuminate\Support\Carbon::parse($tanggalPengisian)->format('d/m/Y') : '-' }}
-
                     </p>
-
                 </div>
 
-
-
                 <div>
-
                     <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Status Pengisian</p>
-
                     <div class="mt-1">
-
                         <span
                             class="inline-flex rounded-full px-3 py-1 text-xs font-bold {{ $jumlahTerisi === $jumlahButir ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700' }}">
-
                             {{ $statusPengisianLabel }} ({{ $jumlahTerisi }}/{{ $jumlahButir }} butir)
-
                         </span>
-
                     </div>
-
                 </div>
-
-
 
             </div>
 

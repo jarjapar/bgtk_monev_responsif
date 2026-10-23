@@ -4,67 +4,82 @@ namespace App\Http\Controllers;
 
 use App\Models\BKQuestion;
 use App\Models\BKSubmission;
+use App\Support\SekolahResolver;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use App\Support\SekolahResolver;
 
 class BKController extends Controller
 {
     /**
-     * =========================================================
-     * RIWAYAT PENGISIAN BK
-     * =========================================================
+     * Jabatan yang diizinkan.
      */
-    public function index()
-    {
-        $submissions = BKSubmission::latest()
-            ->paginate(10);
+    private const JABATAN_BK = [
+        'BK',
+        'Kepala Sekolah',
+        'Rekan Sejawat',
+        'Peserta Didik',
+    ];
 
-        return view(
-            'bk.index',
-            compact('submissions')
-        );
-    }
     /**
-     * =========================================================
-     * FORM PENGISIAN INSTRUMEN BK
-     * =========================================================
+     * Mengambil pertanyaan aktif sesuai jabatan.
+     * BK mendapat Level 1-4.
+     * Jabatan lainnya mendapat Level 3-4.
      */
-    public function create()
+    private function getQuestionsForJabatan(string $jabatan)
     {
-        $questions = BKQuestion::where('aktif', true)
-            ->orderBy('urutan')
-            ->get();
+        $query = BKQuestion::where('aktif', true);
 
-        return view(
-            'bk.create',
-            compact('questions')
-        );
+        if ($jabatan !== 'BK') {
+            $query->whereIn('level', [3, 4]);
+        }
+
+        return $query->orderBy('urutan')->get();
     }
+
     /**
-     * =========================================================
-     * SIMPAN PENGISIAN INSTRUMEN BK
-     * =========================================================
+     * Memastikan jawaban hanya berisi ID pertanyaan yang berlaku.
      */
-    public function store(Request $request)
+    private function validateApplicableAnswers(
+        Request $request,
+        array $validated,
+        $questions
+    ): array {
+        $answers = $validated['jawaban'] ?? [];
+        $allowedIds = $questions->pluck('id')
+            ->map(fn($id) => (string) $id)
+            ->all();
+
+        foreach (array_keys($answers) as $id) {
+            if (!in_array((string) $id, $allowedIds, true)) {
+                abort(
+                    422,
+                    'Terdapat jawaban untuk indikator yang tidak berlaku bagi jabatan responden.'
+                );
+            }
+        }
+
+        foreach ($questions as $question) {
+            if (!array_key_exists($question->id, $answers)) {
+                return back()
+                    ->withErrors([
+                        'jawaban' =>
+                            "Pernyataan nomor {$question->nomor} belum dijawab.",
+                    ])
+                    ->withInput()
+                    ->throwResponse();
+            }
+        }
+
+        return $answers;
+    }
+
+    /**
+     * Validasi data utama pengisian.
+     */
+    private function validationRules(): array
     {
-        /*
-        |--------------------------------------------------------------------------
-        | AMBIL SEMUA PERTANYAAN AKTIF
-        |--------------------------------------------------------------------------
-        */
-        $questions = BKQuestion::where('aktif', true)
-            ->orderBy('urutan')
-            ->get();
-
-        /*
-        |--------------------------------------------------------------------------
-        | VALIDASI DATA
-        |--------------------------------------------------------------------------
-        */
-        $validated = $request->validate([
-
+        return [
             'nama_petugas_monev' => [
                 'required',
                 'string',
@@ -91,15 +106,10 @@ class BKController extends Controller
             ],
             'jabatan_responden' => [
                 'required',
-                Rule::in([
-                    'Operator Sekolah',
-                    'Bendahara Sekolah',
-                    'Lainnya',
-                ]),
+                Rule::in(self::JABATAN_BK),
             ],
             'jabatan_lainnya' => [
                 'nullable',
-                'required_if:jabatan_responden,Lainnya',
                 'string',
                 'max:255',
             ],
@@ -126,40 +136,178 @@ class BKController extends Controller
             'jawaban' => [
                 'required',
                 'array',
+                'min:1',
             ],
             'jawaban.*' => [
                 'required',
-                'in:0,1',
+                Rule::in(['0', '1', 0, 1]),
             ],
-
             'essay' => [
                 'nullable',
                 'array',
             ],
-
             'essay.*.pertanyaan' => [
                 'nullable',
                 'string',
             ],
-
             'essay.*.jawaban' => [
                 'nullable',
                 'string',
             ],
+        ];
+    }
 
-        ]);
-        /*
-        |--------------------------------------------------------------------------
-        | PASTIKAN SEMUA INDIKATOR DIJAWAB
-        |--------------------------------------------------------------------------
-        */
+    /**
+     * Menghitung skor dari pertanyaan yang berlaku saja.
+     */
+    private function calculateScore($questions, array $answers): array
+    {
+        $jumlahSoal = $questions->count();
+        $jumlahYa = 0;
+
         foreach ($questions as $question) {
+            if ((string) $answers[$question->id] === '1') {
+                $jumlahYa++;
+            }
+        }
+
+        $jumlahTidak = $jumlahSoal - $jumlahYa;
+
+        $skorPersentase = $jumlahSoal > 0
+            ? round(($jumlahYa / $jumlahSoal) * 100, 2)
+            : 0;
+
+        $kategori = $skorPersentase >= 50
+            ? 'Baik / Kategori Tinggi'
+            : 'Kurang / Kategori Rendah';
+
+        return [
+            'jumlah_soal' => $jumlahSoal,
+            'jumlah_ya' => $jumlahYa,
+            'jumlah_tidak' => $jumlahTidak,
+            'skor_persentase' => $skorPersentase,
+            'kategori' => $kategori,
+            'status' => 'Selesai',
+        ];
+    }
+
+    /**
+     * Simpan jawaban indikator yang berlaku.
+     */
+    private function saveAnswers(
+        BKSubmission $submission,
+        $questions,
+        array $answers,
+        bool $update = false
+    ): void {
+        $allowedIds = $questions->pluck('id')->all();
+
+        foreach ($questions as $question) {
+            $data = [
+                'jawaban' =>
+                    (string) $answers[$question->id] === '1',
+            ];
+
+            if ($update) {
+                $submission->answers()->updateOrCreate(
+                    ['bk_question_id' => $question->id],
+                    $data
+                );
+            } else {
+                $submission->answers()->create([
+                    'bk_question_id' => $question->id,
+                    ...$data,
+                ]);
+            }
+        }
+
+        // Hapus jawaban lama yang tidak lagi berlaku.
+        $submission->answers()
+            ->whereNotIn('bk_question_id', $allowedIds)
+            ->delete();
+    }
+
+    /**
+     * Simpan jawaban uraian yang dikirimkan.
+     */
+    private function saveEssays(
+        BKSubmission $submission,
+        ?array $essays
+    ): void {
+        $submission->essayAnswers()->delete();
+
+        foreach ($essays ?? [] as $nomor => $essay) {
             if (
-                !array_key_exists(
-                    $question->id,
-                    $validated['jawaban']
-                )
+                empty($essay['pertanyaan']) &&
+                empty($essay['jawaban'])
             ) {
+                continue;
+            }
+
+            $submission->essayAnswers()->create([
+                'nomor' => (int) $nomor,
+                'pertanyaan' => $essay['pertanyaan'] ?? '',
+                'jawaban' => $essay['jawaban'] ?? null,
+            ]);
+        }
+    }
+
+    /**
+     * Riwayat pengisian BK.
+     */
+    public function index()
+    {
+        $submissions = BKSubmission::latest()->paginate(10);
+
+        return view('bk.index', compact('submissions'));
+    }
+
+    /**
+     * Form pengisian BK.
+     * Semua pertanyaan dikirim ke view agar pilihan jabatan
+     * dapat mengatur visibilitas level melalui JavaScript.
+     */
+    public function create()
+    {
+        $questions = BKQuestion::where('aktif', true)
+            ->orderBy('urutan')
+            ->get();
+
+        return view('bk.create', compact('questions'));
+    }
+
+    /**
+     * Simpan pengisian baru.
+     */
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate($this->validationRules());
+
+        $questions = $this->getQuestionsForJabatan(
+            $validated['jabatan_responden']
+        );
+
+        $answers = $validated['jawaban'];
+
+        $allowedIds = $questions->pluck('id')
+            ->map(fn($id) => (string) $id)
+            ->all();
+
+
+        foreach (array_keys($answers) as $id) {
+            if (!in_array((string) $id, $allowedIds, true)) {
+                return back()
+                    ->withErrors([
+                        'jawaban' =>
+                            'Terdapat jawaban pada level yang tidak berlaku bagi jabatan ini.',
+                    ])
+                    ->withInput();
+            }
+        }
+
+        foreach ($questions as $question) {
+            if (!array_key_exists($question->id, $answers)) {
                 return back()
                     ->withErrors([
                         'jawaban' =>
@@ -168,270 +316,71 @@ class BKController extends Controller
                     ->withInput();
             }
         }
-        /*
-        |--------------------------------------------------------------------------
-        | SIMPAN SEMUA DATA DALAM TRANSAKSI
-        |--------------------------------------------------------------------------
-        */
-        $submission = DB::transaction(function () use ($validated, $questions) {
-            /*
-            |--------------------------------------------------------------------------
-            | HITUNG JUMLAH SOAL
-            |--------------------------------------------------------------------------
-            */
-            $jumlahSoal = $questions->count();
-            /*
-            |--------------------------------------------------------------------------
-            | HITUNG JAWABAN YA
-            |--------------------------------------------------------------------------
-            */
-            $jumlahYa = collect(
-                $validated['jawaban']
-            )
-                ->filter(
-                    fn($jawaban) =>
-                        (string) $jawaban === '1'
-                )
-                ->count();
-            /*
-            |--------------------------------------------------------------------------
-            | HITUNG JAWABAN TIDAK
-            |--------------------------------------------------------------------------
-            */
-            $jumlahTidak =
-                $jumlahSoal - $jumlahYa;
-            /*
-            |--------------------------------------------------------------------------
-            | HITUNG NILAI AKHIR
-            |--------------------------------------------------------------------------
-            |
-            | Ya     = 1
-            | Tidak  = 0
-            |
-            | Nilai = jumlah Ya / jumlah soal × 100
-            |--------------------------------------------------------------------------
-            */
 
-            $skorPersentase = $jumlahSoal > 0
-                ? round(
-                    ($jumlahYa / $jumlahSoal) * 100,
-                    2
-                )
-                : 0;
-            /*
-            |--------------------------------------------------------------------------
-            | TENTUKAN KATEGORI
-            |--------------------------------------------------------------------------
-            */
-            $kategori = $skorPersentase >= 50
-                ? 'Baik / Kategori Tinggi'
-                : 'Kurang / Kategori Rendah';
-            /*
-            |--------------------------------------------------------------------------
-            | SIMPAN DATA PENGISIAN
-            |--------------------------------------------------------------------------
-            */
+        $submission = DB::transaction(function () use ($validated, $questions, $answers) {
+            $score = $this->calculateScore($questions, $answers);
+
             $submission = BKSubmission::create([
                 'sekolah_id' => SekolahResolver::resolve(
                     $validated['satuan_pendidikan'] ?? null
                 )?->id,
 
-                'nama_petugas_monev' =>
-                    $validated['nama_petugas_monev'],
+                'nama_petugas_monev' => $validated['nama_petugas_monev'],
+                'instansi_petugas' => $validated['instansi_petugas'] ?? null,
+                'lokasi_monev' => $validated['lokasi_monev'] ?? null,
+                'tanggal_pelaksanaan' => $validated['tanggal_pelaksanaan'] ?? null,
 
-                'instansi_petugas' =>
-                    $validated['instansi_petugas'] ?? null,
+                'nama_responden' => $validated['nama_responden'],
+                'jabatan_responden' => $validated['jabatan_responden'],
+                'jabatan_lainnya' => null,
 
-                'lokasi_monev' =>
-                    $validated['lokasi_monev'] ?? null,
+                'satuan_pendidikan' => $validated['satuan_pendidikan'],
+                'masa_kerja' => $validated['masa_kerja'],
+                'nama_pelatihan' => $validated['nama_pelatihan'],
+                'tanggal_pengisian' => $validated['tanggal_pengisian'],
 
-                'tanggal_pelaksanaan' =>
-                    $validated['tanggal_pelaksanaan'] ?? null,
-
-                'nama_responden' =>
-                    $validated['nama_responden'],
-
-                'jabatan_responden' =>
-                    $validated['jabatan_responden'],
-
-                'jabatan_lainnya' =>
-                    $validated['jabatan_lainnya'] ?? null,
-
-                'satuan_pendidikan' =>
-                    $validated['satuan_pendidikan'],
-
-                'masa_kerja' =>
-                    $validated['masa_kerja'],
-
-                'nama_pelatihan' =>
-                    $validated['nama_pelatihan'],
-
-                'tanggal_pengisian' =>
-                    $validated['tanggal_pengisian'],
-
-                'jumlah_soal' =>
-                    $jumlahSoal,
-
-                'jumlah_ya' =>
-                    $jumlahYa,
-
-                'jumlah_tidak' =>
-                    $jumlahTidak,
-
-                'skor_persentase' =>
-                    $skorPersentase,
-
-                'kategori' =>
-                    $kategori,
-
-                'status' =>
-                    'Selesai',
-
+                ...$score,
             ]);
-            /*
-            |--------------------------------------------------------------------------
-            | SIMPAN JAWABAN YA / TIDAK
-            |--------------------------------------------------------------------------
-            */
-            foreach ($questions as $question) {
 
-                $submission->answers()->create([
+            $this->saveAnswers(
+                $submission,
+                $questions,
+                $answers
+            );
 
-                    'bk_question_id' =>
-                        $question->id,
-
-                    'jawaban' =>
-                        (string) 
-                        $validated['jawaban'][$question->id]
-                        === '1',
-                ]);
-            }
-            /*
-            |--------------------------------------------------------------------------
-            | SIMPAN JAWABAN URAIAN
-            |--------------------------------------------------------------------------
-            */
-            if (
-                !empty($validated['essay'])
-                && is_array($validated['essay'])
-            ) {
-                foreach (
-                    $validated['essay']
-                    as $nomor => $essay
-                ) {
-                    /*
-                    |--------------------------------------------------------------------------
-                    | LEWATI JIKA KOSONG
-                    |--------------------------------------------------------------------------
-                    */
-                    if (
-                        empty($essay['pertanyaan'])
-                        && empty($essay['jawaban'])
-                    ) {
-                        continue;
-                    }
-                    /*
-                    |--------------------------------------------------------------------------
-                    | SIMPAN ESSAY
-                    |--------------------------------------------------------------------------
-                    */
-
-                    $submission->essayAnswers()->create([
-
-                        'nomor' =>
-                            (int) $nomor,
-
-                        'pertanyaan' =>
-                            $essay['pertanyaan'] ?? '',
-
-                        'jawaban' =>
-                            $essay['jawaban'] ?? null,
-
-                    ]);
-
-                }
-
-            }
-
+            $this->saveEssays(
+                $submission,
+                $validated['essay'] ?? null
+            );
 
             return $submission;
-
         });
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | LANGSUNG KE HALAMAN HASIL PENILAIAN BK
-        |--------------------------------------------------------------------------
-        */
-
         return redirect()
-            ->route(
-                'bk.show',
-                $submission
-            )
+            ->route('bk.show', $submission)
             ->with(
                 'success',
                 'Pengisian instrumen BK berhasil disimpan.'
             );
     }
 
-
     /**
-     * =========================================================
-     * FORM EDIT PENGISIAN BK
-     * =========================================================
+     * Form edit.
      */
     public function edit(BKSubmission $submission)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | LOAD DATA LAMA
-        |--------------------------------------------------------------------------
-        */
-
         $submission->load([
             'answers.question',
             'essayAnswers',
         ]);
 
+        // Tampilkan hanya level yang berlaku untuk jabatan tersimpan.
+        $questions = $this->getQuestionsForJabatan(
+            $submission->jabatan_responden
+        );
 
-        /*
-        |--------------------------------------------------------------------------
-        | AMBIL SEMUA PERTANYAAN AKTIF
-        |--------------------------------------------------------------------------
-        */
-
-        $questions = BKQuestion::where('aktif', true)
-            ->orderBy('urutan')
-            ->get();
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | SUSUN JAWABAN BERDASARKAN ID PERTANYAAN
-        |--------------------------------------------------------------------------
-        */
-
-        $answers = $submission->answers
-            ->keyBy('bk_question_id');
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | SUSUN ESSAY BERDASARKAN NOMOR
-        |--------------------------------------------------------------------------
-        */
-
-        $essayAnswers = $submission->essayAnswers
-            ->keyBy('nomor');
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | TAMPILKAN FORM EDIT
-        |--------------------------------------------------------------------------
-        */
+        $answers = $submission->answers->keyBy('bk_question_id');
+        $essayAnswers = $submission->essayAnswers->keyBy('nomor');
 
         return view(
             'bk.edit',
@@ -444,360 +393,87 @@ class BKController extends Controller
         );
     }
 
-
     /**
-     * =========================================================
-     * UPDATE PENGISIAN BK
-     * =========================================================
+     * Update pengisian.
      */
     public function update(
         Request $request,
         BKSubmission $submission
     ) {
+        $validated = $request->validate($this->validationRules());
 
-        /*
-        |--------------------------------------------------------------------------
-        | AMBIL SEMUA PERTANYAAN AKTIF
-        |--------------------------------------------------------------------------
-        */
+        $questions = $this->getQuestionsForJabatan(
+            $validated['jabatan_responden']
+        );
 
-        $questions = BKQuestion::where('aktif', true)
-            ->orderBy('urutan')
-            ->get();
+        $answers = $validated['jawaban'];
 
+        $allowedIds = $questions->pluck('id')
+            ->map(fn($id) => (string) $id)
+            ->all();
 
-        /*
-        |--------------------------------------------------------------------------
-        | VALIDASI DATA
-        |--------------------------------------------------------------------------
-        */
-
-        $validated = $request->validate([
-
-            'nama_petugas_monev' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-
-            'instansi_petugas' => [
-                'nullable',
-                'string',
-                'max:255',
-            ],
-
-            'lokasi_monev' => [
-                'nullable',
-                'string',
-                'max:255',
-            ],
-
-            'tanggal_pelaksanaan' => [
-                'nullable',
-                'date',
-            ],
-
-            'nama_responden' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-
-            'jabatan_responden' => [
-                'required',
-                Rule::in([
-                    'Operator Sekolah',
-                    'Bendahara Sekolah',
-                    'Lainnya',
-                ]),
-            ],
-
-            'jabatan_lainnya' => [
-                'nullable',
-                'required_if:jabatan_responden,Lainnya',
-                'string',
-                'max:255',
-            ],
-
-            'satuan_pendidikan' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-
-            'masa_kerja' => [
-                'required',
-                'integer',
-                'min:0',
-                'max:100',
-            ],
-
-            'nama_pelatihan' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-
-            'tanggal_pengisian' => [
-                'required',
-                'date',
-            ],
-
-            'jawaban' => [
-                'required',
-                'array',
-            ],
-
-            'jawaban.*' => [
-                'required',
-                'in:0,1',
-            ],
-
-            'essay' => [
-                'nullable',
-                'array',
-            ],
-
-            'essay.*.pertanyaan' => [
-                'nullable',
-                'string',
-            ],
-
-            'essay.*.jawaban' => [
-                'nullable',
-                'string',
-            ],
-
-        ]);
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | PASTIKAN SEMUA INDIKATOR DIJAWAB
-        |--------------------------------------------------------------------------
-        */
+        foreach (array_keys($answers) as $id) {
+            if (!in_array((string) $id, $allowedIds, true)) {
+                return back()
+                    ->withErrors([
+                        'jawaban' =>
+                            'Terdapat jawaban pada level yang tidak berlaku bagi jabatan ini.',
+                    ])
+                    ->withInput();
+            }
+        }
 
         foreach ($questions as $question) {
-
-            if (
-                !array_key_exists(
-                    $question->id,
-                    $validated['jawaban']
-                )
-            ) {
-
+            if (!array_key_exists($question->id, $answers)) {
                 return back()
                     ->withErrors([
                         'jawaban' =>
                             "Pernyataan nomor {$question->nomor} belum dijawab.",
                     ])
                     ->withInput();
-
             }
-
         }
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | UPDATE DALAM TRANSAKSI
-        |--------------------------------------------------------------------------
-        */
-
-        DB::transaction(function () use ($validated, $questions, $submission) {
-
-            /*
-            |--------------------------------------------------------------------------
-            | HITUNG ULANG HASIL
-            |--------------------------------------------------------------------------
-            */
-
-            $jumlahSoal = $questions->count();
-
-
-            $jumlahYa = collect(
-                $validated['jawaban']
-            )
-                ->filter(
-                    fn($jawaban) =>
-                        (string) $jawaban === '1'
-                )
-                ->count();
-
-
-            $jumlahTidak =
-                $jumlahSoal - $jumlahYa;
-
-
-            $skorPersentase = $jumlahSoal > 0
-                ? round(
-                    ($jumlahYa / $jumlahSoal) * 100,
-                    2
-                )
-                : 0;
-
-
-            $kategori = $skorPersentase >= 50
-                ? 'Baik / Kategori Tinggi'
-                : 'Kurang / Kategori Rendah';
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | UPDATE DATA UTAMA
-            |--------------------------------------------------------------------------
-            */
+        DB::transaction(function () use ($validated, $questions, $answers, $submission) {
+            $score = $this->calculateScore($questions, $answers);
 
             $submission->update([
+                'sekolah_id' => SekolahResolver::resolve(
+                    $validated['satuan_pendidikan'] ?? null
+                )?->id,
 
-                'nama_petugas_monev' =>
-                    $validated['nama_petugas_monev'],
+                'nama_petugas_monev' => $validated['nama_petugas_monev'],
+                'instansi_petugas' => $validated['instansi_petugas'] ?? null,
+                'lokasi_monev' => $validated['lokasi_monev'] ?? null,
+                'tanggal_pelaksanaan' => $validated['tanggal_pelaksanaan'] ?? null,
 
-                'instansi_petugas' =>
-                    $validated['instansi_petugas'] ?? null,
+                'nama_responden' => $validated['nama_responden'],
+                'jabatan_responden' => $validated['jabatan_responden'],
+                'jabatan_lainnya' => null,
 
-                'lokasi_monev' =>
-                    $validated['lokasi_monev'] ?? null,
+                'satuan_pendidikan' => $validated['satuan_pendidikan'],
+                'masa_kerja' => $validated['masa_kerja'],
+                'nama_pelatihan' => $validated['nama_pelatihan'],
+                'tanggal_pengisian' => $validated['tanggal_pengisian'],
 
-                'tanggal_pelaksanaan' =>
-                    $validated['tanggal_pelaksanaan'] ?? null,
-
-                'nama_responden' =>
-                    $validated['nama_responden'],
-
-                'jabatan_responden' =>
-                    $validated['jabatan_responden'],
-
-                'jabatan_lainnya' =>
-                    $validated['jabatan_lainnya'] ?? null,
-
-                'satuan_pendidikan' =>
-                    $validated['satuan_pendidikan'],
-
-                'masa_kerja' =>
-                    $validated['masa_kerja'],
-
-                'nama_pelatihan' =>
-                    $validated['nama_pelatihan'],
-
-                'tanggal_pengisian' =>
-                    $validated['tanggal_pengisian'],
-
-                'jumlah_soal' =>
-                    $jumlahSoal,
-
-                'jumlah_ya' =>
-                    $jumlahYa,
-
-                'jumlah_tidak' =>
-                    $jumlahTidak,
-
-                'skor_persentase' =>
-                    $skorPersentase,
-
-                'kategori' =>
-                    $kategori,
-
-                'status' =>
-                    'Selesai',
-
+                ...$score,
             ]);
 
+            $this->saveAnswers(
+                $submission,
+                $questions,
+                $answers,
+                true
+            );
 
-            /*
-            |--------------------------------------------------------------------------
-            | UPDATE JAWABAN YA / TIDAK
-            |--------------------------------------------------------------------------
-            */
-
-            foreach ($questions as $question) {
-
-                $submission->answers()->updateOrCreate(
-
-                    [
-                        'bk_question_id' =>
-                            $question->id,
-                    ],
-
-                    [
-                        'jawaban' =>
-                            (string) 
-                            $validated['jawaban'][$question->id]
-                            === '1',
-                    ]
-
-                );
-
-            }
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | HAPUS ESSAY LAMA
-            |--------------------------------------------------------------------------
-            |
-            | Kemudian kita simpan kembali essay terbaru.
-            |--------------------------------------------------------------------------
-            */
-
-            $submission->essayAnswers()->delete();
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | SIMPAN ESSAY TERBARU
-            |--------------------------------------------------------------------------
-            */
-
-            if (
-                !empty($validated['essay'])
-                && is_array($validated['essay'])
-            ) {
-
-                foreach (
-                    $validated['essay']
-                    as $nomor => $essay
-                ) {
-
-                    if (
-                        empty($essay['pertanyaan'])
-                        && empty($essay['jawaban'])
-                    ) {
-                        continue;
-                    }
-
-
-                    $submission->essayAnswers()->create([
-
-                        'nomor' =>
-                            (int) $nomor,
-
-                        'pertanyaan' =>
-                            $essay['pertanyaan'] ?? '',
-
-                        'jawaban' =>
-                            $essay['jawaban'] ?? null,
-
-                    ]);
-
-                }
-
-            }
-
+            $this->saveEssays(
+                $submission,
+                $validated['essay'] ?? null
+            );
         });
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | KEMBALI KE HASIL BK
-        |--------------------------------------------------------------------------
-        */
-
         return redirect()
-            ->route(
-                'bk.show',
-                $submission
-            )
+            ->route('bk.show', $submission)
             ->with(
                 'success',
                 'Data pengisian BK berhasil diperbarui.'
@@ -805,9 +481,7 @@ class BKController extends Controller
     }
 
     /**
-     * =========================================================
-     * HAPUS DATA BK
-     * =========================================================
+     * Hapus data BK.
      */
     public function destroy(BKSubmission $submission)
     {
@@ -817,85 +491,37 @@ class BKController extends Controller
             ->route('instrumen.index')
             ->with('success', 'Data BK berhasil dihapus.');
     }
+
     /**
-     * =========================================================
-     * HASIL PENILAIAN BK
-     * =========================================================
+     * Hasil penilaian.
      */
     public function show(BKSubmission $submission)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | LOAD RELASI
-        |--------------------------------------------------------------------------
-        */
-
         $submission->load([
             'answers.question',
             'essayAnswers',
         ]);
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | URUTKAN JAWABAN SESUAI URUTAN INSTRUMEN
-        |--------------------------------------------------------------------------
-        */
-
         $answers = $submission->answers
-            ->sortBy(function ($answer) {
-
-                return $answer->question?->urutan ?? 999999;
-
-            })
+            ->sortBy(
+                fn($answer) =>
+                    $answer->question?->urutan ?? 999999
+            )
             ->values();
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | PASANG KEMBALI RELASI ANSWERS
-        |--------------------------------------------------------------------------
-        */
-
-        $submission->setRelation(
-            'answers',
-            $answers
-        );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | URUTKAN ESSAY
-        |--------------------------------------------------------------------------
-        */
+        $submission->setRelation('answers', $answers);
 
         $essayAnswers = $submission->essayAnswers
             ->sortBy('nomor')
             ->values();
 
+        $submission->setRelation('essayAnswers', $essayAnswers);
 
-        $submission->setRelation(
-            'essayAnswers',
-            $essayAnswers
-        );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | TAMPILKAN HASIL
-        |--------------------------------------------------------------------------
-        */
-
-        return view(
-            'bk.show',
-            compact('submission')
-        );
+        return view('bk.show', compact('submission'));
     }
 
     /**
-     * =========================================================
-     * CETAK HASIL PENILAIAN BK
-     * =========================================================
+     * Cetak hasil penilaian.
      */
     public function cetak(BKSubmission $submission)
     {
@@ -905,18 +531,20 @@ class BKController extends Controller
         ]);
 
         $answers = $submission->answers
-            ->sortBy(function ($answer) {
-
-                return $answer->question?->urutan ?? 999999;
-            })
+            ->sortBy(
+                fn($answer) =>
+                    $answer->question?->urutan ?? 999999
+            )
             ->values();
-        $submission->setRelation(
-            'answers',
-            $answers
-        );
-        return view(
-            'bk.cetak',
-            compact('submission')
-        );
+
+        $submission->setRelation('answers', $answers);
+
+        $essayAnswers = $submission->essayAnswers
+            ->sortBy('nomor')
+            ->values();
+
+        $submission->setRelation('essayAnswers', $essayAnswers);
+
+        return view('bk.cetak', compact('submission'));
     }
 }

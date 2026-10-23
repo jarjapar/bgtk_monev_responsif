@@ -33,7 +33,18 @@
                 'text' => '#047857',
                 'aktif' => false,
             ],
+            [
+                'kode' => 'GEMBIRA',
+                'no' => '04',
+                'solid' => '#d97706',
+                'soft' => '#fffbeb',
+                'border' => '#fde68a',
+                'text' => '#b45309',
+                'aktif' => true,
+            ],
         ];
+
+        $routeGembiraSiap = \Illuminate\Support\Facades\Route::has('wawancara.gembira.create');
     @endphp
 
     <div class="w-full space-y-6 pb-8">
@@ -54,10 +65,10 @@
                 <div id="alert-{{ $jenisPesan }}" role="alert"
                     class="flex items-center justify-between gap-4 rounded-xl border px-4 py-3 text-sm transition-all duration-300"
                     style="
-                                                                        border-color: {{ $warna === 'emerald' ? '#a7f3d0' : '#bfdbfe' }};
-                                                                        background: {{ $warna === 'emerald' ? '#ecfdf5' : '#eff6ff' }};
-                                                                        color: {{ $warna === 'emerald' ? '#047857' : '#1d4ed8' }};
-                                                                    ">
+                                                                                                                        border-color: {{ $warna === 'emerald' ? '#a7f3d0' : '#bfdbfe' }};
+                                                                                                                        background: {{ $warna === 'emerald' ? '#ecfdf5' : '#eff6ff' }};
+                                                                                                                        color: {{ $warna === 'emerald' ? '#047857' : '#1d4ed8' }};
+                                                                                                                    ">
                     <div class="flex items-center gap-2">
                         @if ($jenisPesan === 'success')
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none"
@@ -94,57 +105,62 @@
         @endif
 
         {{-- PILIHAN JENIS WAWANCARA --}}
-        <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
             @foreach ($kartu as $k)
                 <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md">
                     <div style="height: 5px; background: {{ $k['solid'] }}"></div>
 
                     <div class="p-5">
                         <span class="inline-flex rounded-full border px-3 py-1 text-xs font-semibold" style="
-                                                                background: {{ $k['soft'] }};
-                                                                border-color: {{ $k['border'] }};
-                                                                color: {{ $k['text'] }};
-                                                            ">
+                                                                                                background: {{ $k['soft'] }};
+                                                                                                border-color: {{ $k['border'] }};
+                                                                                                color: {{ $k['text'] }};
+                                                                                            ">
                             Instrumen {{ $k['no'] }}
                         </span>
 
                         <h2 class="mt-4 text-lg font-bold text-slate-900">
-                            Wawancara {{ $k['kode'] }}
+                            @if ($k['kode'] === 'GEMBIRA')
+                                Wawancara  GEMBIRA
+                            @else
+                                Wawancara {{ $k['kode'] }}
+                            @endif
                         </h2>
 
                         <p class="mt-2 min-h-10 text-sm leading-6 text-slate-500">
                             @if ($k['kode'] === 'BCKS')
-                                Form wawancara BCKS 
+                                Form wawancara BCKS
                             @elseif ($k['kode'] === 'BK')
                                 Form wawancara BK
+                            @elseif ($k['kode'] === 'TENDIK')
+                                Form wawancara TENDIK
                             @else
-                                Form wawancara TENDIK 
+                                Form wawancara Matematika GEMBIRA
                             @endif
                         </p>
+<div class="mt-5">
+    @php
+        $routeTombol = match ($k['kode']) {
+            'BCKS' => 'wawancara.bcks.create',
+            'BK' => 'wawancara.bk.create',
+            'TENDIK' => 'wawancara.tendik.create',
+            'GEMBIRA' => 'wawancara.gembira.create',
+        };
 
+        $labelTombol = match ($k['kode']) {
+            'BCKS' => '+ Isi Wawancara BCKS',
+            'BK' => '+ Isi Wawancara BK',
+            'TENDIK' => '+ Isi Wawancara TENDIK',
+            'GEMBIRA' => '+ Isi Wawancara GEMBIRA',
+        };
+    @endphp
 
-                        <div class="mt-5">
-                            @if ($k['kode'] === 'BCKS')
-                                <a href="{{ route('wawancara.bcks.create') }}"
-                                    class="inline-flex w-full items-center justify-center rounded-xl px-4 text-sm font-semibold text-white transition hover:opacity-90"
-                                    style="height: 44px; background: {{ $k['solid'] }}">
-                                    + Isi Wawancara BCKS
-                                </a>
-                            @elseif ($k['kode'] === 'BK')
-                                <a href="{{ route('wawancara.bk.create') }}"
-                                    class="inline-flex w-full items-center justify-center rounded-xl px-4 text-sm font-semibold text-white transition hover:opacity-90"
-                                    style="height: 44px; background: {{ $k['solid'] }}">
-                                    + Isi Wawancara BK
-                                </a>
-                            @else
-                                <a href="{{ route('wawancara.tendik.create') }}" 
-                                 class="inline-flex w-full items-center justify-center rounded-xl px-4 text-sm font-semibold text-white transition hover:opacity-90"
-                                    style="height: 44px; background: {{ $k['solid'] }}">
-                                     + Isi Wawancara TENDIK
-                                 </a>
-                            @endif
-                        </div>
-
+    <a href="{{ route($routeTombol) }}"
+       class="inline-flex w-full items-center justify-center rounded-xl px-4 text-sm font-semibold text-white transition hover:opacity-90"
+       style="height: 44px; background: {{ $k['solid'] }};">
+        {{ $labelTombol }}
+    </a>
+</div>
                     </div>
                 </div>
             @endforeach
@@ -167,6 +183,8 @@
                             <option value="BK" @selected(request('jenis_instrumen') === 'BK')>Wawancara BK</option>
                             <option value="TENDIK" @selected(request('jenis_instrumen') === 'TENDIK')>Wawancara TENDIK
                             </option>
+                            <option value="GEMBIRA" @selected(request('jenis_instrumen') === 'GEMBIRA')>Wawancara Matematika
+                                GEMBIRA</option>
                         </select>
                     </div>
 
@@ -249,17 +267,39 @@
                                 } elseif ($jenisData === 'TENDIK') {
                                     $labelJenis = 'Wawancara TENDIK';
                                     $kodeJenis = 'TENDIK';
+                                } elseif ($jenisData === 'GEMBIRA') {
+                                    $labelJenis = 'Wawancara Matematika GEMBIRA';
+                                    $kodeJenis = 'GEMBIRA';
                                 } else {
                                     $labelJenis = $wawancara->instrumen->nama_instrumen ?? 'Wawancara Lama';
                                     $kodeJenis = 'LAMA';
                                 }
 
-                                $namaBcks = $wawancara->nama_bcks
+                                $warnaLatarJenis = match ($kodeJenis) {
+                                    'BCKS' => '#eef4ff',
+                                    'BK' => '#f6efff',
+                                    'TENDIK' => '#ecfdf5',
+                                    'GEMBIRA' => '#fffbeb',
+                                    default => '#f1f5f9',
+                                };
+
+                                $warnaTeksJenis = match ($kodeJenis) {
+                                    'BCKS' => '#1d4ed8',
+                                    'BK' => '#7e22ce',
+                                    'TENDIK' => '#047857',
+                                    'GEMBIRA' => '#b45309',
+                                    default => '#475569',
+                                };
+
+                                // Kolom BCKS / Narasumber: nama responden di baris atas,
+                                // status/jabatan responden di baris bawah.
+                                $namaBcks = $wawancara->nama_responden
                                     ?: $wawancara->nama_narasumber
                                     ?: '-';
 
-                                $unitBcks = $wawancara->unit_kerja_bcks
-                                    ?: $wawancara->jabatan_narasumber;
+                                $unitBcks = $wawancara->status_responden
+                                    ?: $wawancara->jabatan_narasumber
+                                    ?: '-';
 
                                 $namaResponden = $wawancara->nama_responden
                                     ?: $wawancara->nama_narasumber
@@ -295,10 +335,8 @@
                                             <p class="text-sm font-semibold text-slate-900">
                                                 {{ $labelJenis }}
                                             </p>
-                                            <span class="mt-1 inline-flex rounded-full px-2.5 py-1 text-xs font-medium" style="
-                                                                                    background: {{ $kodeJenis === 'BCKS' ? '#eef4ff' : ($kodeJenis === 'BK' ? '#f6efff' : '#f1f5f9') }};
-                                                                                    color: {{ $kodeJenis === 'BCKS' ? '#1d4ed8' : ($kodeJenis === 'BK' ? '#7e22ce' : '#475569') }};
-                                                                                ">
+                                            <span class="mt-1 inline-flex rounded-full px-2.5 py-1 text-xs font-medium"
+                                                style="background: {{ $warnaLatarJenis }}; color: {{ $warnaTeksJenis }};">
                                                 {{ $kodeJenis }}
                                             </span>
                                         </div>
@@ -308,7 +346,7 @@
                                 {{-- BCKS / NARASUMBER --}}
                                 <td class="px-6 py-5">
                                     <p class="text-sm font-semibold text-slate-900">{{ $namaBcks }}</p>
-                                    @if ($unitBcks)
+                                    @if ($unitBcks !== '-')
                                         <p class="mt-1 text-xs text-slate-500">{{ $unitBcks }}</p>
                                     @endif
                                 </td>
@@ -331,9 +369,9 @@
                                     <span
                                         class="inline-flex items-center gap-2 whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold"
                                         style="
-                                                                            background: {{ $isSelesai ? '#d1fae5' : '#fef3c7' }};
-                                                                            color: {{ $isSelesai ? '#047857' : '#b45309' }};
-                                                                        ">
+                                                                                                            background: {{ $isSelesai ? '#d1fae5' : '#fef3c7' }};
+                                                                                                            color: {{ $isSelesai ? '#047857' : '#b45309' }};
+                                                                                                        ">
                                         <span class="h-1.5 w-1.5 rounded-full" style="background: currentColor"></span>
                                         {{ $statusWawancara }}
                                     </span>

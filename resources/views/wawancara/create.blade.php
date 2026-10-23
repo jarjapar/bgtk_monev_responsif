@@ -3,6 +3,36 @@
 @section('title', 'Tambah Wawancara')
 
 @section('content')
+    @php
+        $pertanyaan = [
+            1 => [
+                'judul' => 'Dampak Implementasi RPTKS',
+                'isi' => 'Dari seluruh RPTKS (Rancangan Projek Integratif dan Transformatif Kepala Sekolah) yang Anda susun setelah pelatihan, apakah berdampak setelah diimplementasikan di sekolah? Apa kunci keberhasilannya?',
+                'placeholder' => 'Tuliskan jawaban narasumber secara lengkap...',
+            ],
+            2 => [
+                'judul' => 'Kendala dan Strategi Mitigasi',
+                'isi' => 'Kendala (sistem, anggaran, maupun resistensi SDM) apa yang Anda hadapi saat menerapkan Rancangan Projek tersebut? Bagaimana Anda mengatasinya?',
+                'placeholder' => 'Tuliskan kendala dan strategi penyelesaiannya...',
+            ],
+            3 => [
+                'judul' => 'Perubahan Kepemimpinan dan Pengambilan Keputusan',
+                'isi' => 'Bagaimana Anda merasakan perubahan pada cara Anda mengambil keputusan strategis dan mengelola konflik di sekolah setelah mengikuti pelatihan BCKS?',
+                'placeholder' => 'Tuliskan perubahan yang dirasakan narasumber...',
+            ],
+            4 => [
+                'judul' => 'Dukungan Lingkungan Sekolah',
+                'isi' => 'Sejauh mana dukungan dari Kepala Sekolah (saat ini), rekan guru, dan pengawas sekolah membantu Anda mengeksekusi ide-ide baru di sekolah?',
+                'placeholder' => 'Tuliskan bentuk dukungan dan pengaruhnya...',
+            ],
+            5 => [
+                'judul' => 'Keberlanjutan Program Inovasi',
+                'isi' => 'Bagaimana cara Anda memastikan program inovasi yang telah dimulai tetap berjalan berkelanjutan meskipun terjadi pergantian kepemimpinan atau personil?',
+                'placeholder' => 'Tuliskan strategi menjaga keberlanjutan program...',
+            ],
+        ];
+    @endphp
+
     <div class="mx-auto max-w-6xl space-y-6 pb-8">
 
         {{-- Header --}}
@@ -17,7 +47,7 @@
                 </div>
 
                 <h1 class="text-2xl font-bold tracking-tight text-slate-800">
-                   Instrumen Wawancara BCKS
+                    Instrumen Wawancara BCKS
                 </h1>
 
                 <p class="mt-2 text-sm text-slate-500">
@@ -34,7 +64,20 @@
                 Kembali
             </a>
         </div>
+        <section class="overflow-hidden rounded-2xl bg-white shadow-sm"
+            style="border: 1px solid #e2e8f0; border-left: 4px solid #2563eb;">
 
+            <div class="p-6">
+                <h2 class="text-lg font-bold text-slate-800">
+                    Panduan Wawancara BCKS
+                </h2>
+
+                <p class="mt-1 text-sm leading-6 text-slate-500">
+                    Isilah identitas dan tuliskan jawaban berdasarkan hasil wawancara
+                    dengan responden secara jelas dan sesuai fakta.
+                </p>
+            </div>
+        </section>
         {{-- VALIDATION ERRORS --}}
         @if ($errors->any())
             <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
@@ -50,14 +93,11 @@
         <form action="{{ route('wawancara.store') }}" method="POST" class="space-y-6">
             @csrf
 
-
-            {{-- A. IDENTITAS BCKS --}}
+            {{-- A. IDENTITAS PESERTA BCKS --}}
             <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
                 <div class="flex items-center gap-3 border-b border-slate-100 px-6 py-5">
-                    
                     <div>
-                        <h2 class="text-lg font-bold text-slate-800">
-                            A. Identitas PesertaBCKS</h2>
+                        <h2 class="text-lg font-bold text-slate-800">A. Identitas Peserta BCKS</h2>
                         <p class="text-sm text-slate-500">Lengkapi informasi mengenai peserta wawancara BCKS.</p>
                     </div>
                 </div>
@@ -105,7 +145,6 @@
             {{-- B. IDENTITAS RESPONDEN --}}
             <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
                 <div class="flex items-center gap-3 border-b border-slate-100 px-6 py-5">
-                   
                     <div>
                         <h2 class="text-lg font-bold text-slate-800">B. Identitas Responden</h2>
                         <p class="text-sm text-slate-500">Informasi pihak yang memberikan jawaban wawancara.</p>
@@ -143,10 +182,26 @@
                         <label for="status_responden" class="mb-2 block text-sm font-semibold text-slate-700">
                             Status Responden <span class="text-red-500">*</span>
                         </label>
-                        <input id="status_responden" name="status_responden" type="text"
-                            value="{{ old('status_responden', old('jabatan_narasumber')) }}" required maxlength="255"
-                            placeholder="Contoh: Kepala Sekolah"
-                            class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+
+                        <select id="status_responden" name="status_responden" required
+                            class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+
+                            <option value="">Pilih status responden</option>
+
+                            <option value="BCKS" @selected(old('status_responden') === 'BCKS')>
+                                BCKS
+                            </option>
+
+                            <option value="Atasan Langsung / Pengawas Sekolah" @selected(old('status_responden') === 'Atasan Langsung / Pengawas Sekolah')>
+                                Atasan Langsung / Kepala Sekolah
+                            </option>
+
+                            <option value="Perwakilan Guru / Tenaga Kependidikan"
+                                @selected(old('status_responden') === 'Perwakilan Guru / Tenaga Kependidikan')>
+                                Guru / Tenaga Kependidikan
+                            </option>
+                        </select>
+
                         @error('status_responden')
                             <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                         @enderror
@@ -157,14 +212,13 @@
             {{-- C. PETUGAS MONEV --}}
             <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
                 <div class="flex items-center gap-3 border-b border-slate-100 px-6 py-5">
-                   
                     <div>
                         <h2 class="text-lg font-bold text-slate-800">C. Petugas Monev</h2>
                         <p class="text-sm text-slate-500">Identitas petugas dan tanggal evaluasi.</p>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 gap-5 p-6 md:grid-cols-2">
+                <div class="grid grid-cols-1 gap-5 p-6 md:grid-cols-3">
                     <div>
                         <label for="nama_petugas_monev" class="mb-2 block text-sm font-semibold text-slate-700">
                             Nama Petugas Monev <span class="text-red-500">*</span>
@@ -191,13 +245,13 @@
                         @enderror
                     </div>
 
-                    <div class="md:col-span-2">
+                    <div>
                         <label for="tanggal_evaluasi" class="mb-2 block text-sm font-semibold text-slate-700">
                             Tanggal Evaluasi <span class="text-red-500">*</span>
                         </label>
                         <input id="tanggal_evaluasi" name="tanggal_evaluasi" type="date"
                             value="{{ old('tanggal_evaluasi') }}" required
-                            class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 md:max-w-md">
+                            class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
                         @error('tanggal_evaluasi')
                             <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                         @enderror
@@ -205,19 +259,12 @@
                 </div>
             </section>
 
-            {{-- D. PERTANYAAN ESAI BCKS --}}
+            {{-- D. HASIL WAWANCARA BCKS --}}
             <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
                 <div class="border-b border-slate-100 px-6 py-5">
                     <div class="flex items-center gap-3">
-                        <div
-                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
-                                    d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
-                            </svg>
-                        </div>
                         <div>
-                            <h2 class="font-bold text-slate-800">Hasil Wawancara BCKS</h2>
+                            <h2 class="text-lg font-bold text-slate-800">D. Hasil Wawancara BCKS</h2>
                             <p class="text-sm text-slate-500">
                                 Lima pertanyaan esai untuk menggali pengalaman dan implementasi hasil pelatihan.
                             </p>
@@ -226,41 +273,10 @@
                 </div>
 
                 <div class="space-y-6 p-6">
-                    @php
-                        $pertanyaan = [
-                            1 => [
-                                'judul' => 'Dampak Implementasi RPTKS',
-                                'isi' => 'Dari seluruh RPTKS (Rancangan Projek Integratif dan Transformatif Kepala Sekolah) yang Anda susun setelah pelatihan, apakah berdampak setelah diimplementasikan di sekolah? Apa kunci keberhasilannya?',
-                                'placeholder' => 'Tuliskan jawaban narasumber secara lengkap...',
-                            ],
-                            2 => [
-                                'judul' => 'Kendala dan Strategi Mitigasi',
-                                'isi' => 'Kendala (sistem, anggaran, maupun resistensi SDM) apa yang Anda hadapi saat menerapkan Rancangan Projek tersebut? Bagaimana Anda mengatasinya?',
-                                'placeholder' => 'Tuliskan kendala dan strategi penyelesaiannya...',
-                            ],
-                            3 => [
-                                'judul' => 'Perubahan Kepemimpinan dan Pengambilan Keputusan',
-                                'isi' => 'Bagaimana Anda merasakan perubahan pada cara Anda mengambil keputusan strategis dan mengelola konflik di sekolah setelah mengikuti pelatihan BCKS?',
-                                'placeholder' => 'Tuliskan perubahan yang dirasakan narasumber...',
-                            ],
-                            4 => [
-                                'judul' => 'Dukungan Lingkungan Sekolah',
-                                'isi' => 'Sejauh mana dukungan dari Kepala Sekolah (saat ini), rekan guru, dan pengawas sekolah membantu Anda mengeksekusi ide-ide baru di sekolah?',
-                                'placeholder' => 'Tuliskan bentuk dukungan dan pengaruhnya...',
-                            ],
-                            5 => [
-                                'judul' => 'Keberlanjutan Program Inovasi',
-                                'isi' => 'Bagaimana cara Anda memastikan program inovasi yang telah dimulai tetap berjalan berkelanjutan meskipun terjadi pergantian kepemimpinan atau personil?',
-                                'placeholder' => 'Tuliskan strategi menjaga keberlanjutan program...',
-                            ],
-                        ];
-                    @endphp
-
                     @foreach ($pertanyaan as $nomor => $item)
                         <div>
                             <div class="mb-3 flex items-start gap-3">
-                                <span
-                                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-sm font-bold text-blue-700">
+                                <span class="text-lg font-bold text-slate-800">
                                     {{ $nomor }}
                                 </span>
                                 <div>
@@ -321,7 +337,6 @@
 
             {{-- TOMBOL AKSI --}}
             <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-
                 <button type="submit"
                     class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2">
                     Simpan Wawancara

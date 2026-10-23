@@ -62,6 +62,11 @@
 
                 {{-- Brand --}}
                 <div class="flex h-20 flex-shrink-0 items-center border-b border-slate-800 px-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-16 rounded-lg bg-white text-blue-600" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
                     <!-- <div
                         class="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-600 text-lg font-bold text-white shadow-lg">
                         M

@@ -166,7 +166,7 @@
                                     kemudian tentukan skor
                                     <strong>1, 2, 3, atau 4</strong>
                                     sesuai dengan kondisi riil di lapangan.
-                                    Pastikan seluruh 27 butir penilaian telah diisi.
+                                    Pastikan seluruh butir penilaian yang berlaku sesuai status responden telah diisi.
                                 </p>
 
                             </div>
@@ -281,231 +281,166 @@
             @csrf
 
 
-            {{-- =====================================================
-            A. IDENTITAS BCKS
-            ====================================================== --}}
-
-            <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-
-                <div class="border-b border-slate-200 bg-slate-50 px-6 py-4">
-
-                    <h2 class="text-lg font-bold text-slate-800">
-                        A. Identitas Peserta BCKS
-                    </h2>
-
-                    <p class="mt-1 text-sm text-slate-500">
-                        Lengkapi informasi mengenai peserta BCKS yang dievaluasi.
-                    </p>
-
+            {{-- A. IDENTITAS PESERTA BCKS --}}
+            <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div class="border-b border-slate-200 bg-slate-50 px-6 py-5">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800">A. Identitas Peserta BCKS</h2>
+                        <p class="text-sm text-slate-500">Lengkapi informasi mengenai peserta BCKS yang dievaluasi.</p>
+                    </div>
                 </div>
 
-
                 <div class="grid grid-cols-1 gap-5 p-6 md:grid-cols-2">
-
-                    {{-- Nama BCKS --}}
-
                     <div>
-
                         <label for="nama_bcks" class="mb-2 block text-sm font-semibold text-slate-700">
-                            Nama Peserta BCKS
-                            <span class="text-red-500">*</span>
+                            Nama Peserta BCKS <span class="text-red-500">*</span>
                         </label>
-
-                        <input type="text" id="nama_bcks" name="nama_bcks" value="{{ old('nama_bcks') }}" required
+                        <input id="nama_bcks" name="nama_bcks" type="text" value="{{ old('nama_bcks') }}" required
                             placeholder="Masukkan nama peserta BCKS"
-                            class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
-
+                            class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                        @error('nama_bcks')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
 
-
-                    {{-- Unit Kerja --}}
-
                     <div>
-
                         <label for="unit_kerja" class="mb-2 block text-sm font-semibold text-slate-700">
                             Unit Kerja
                         </label>
-
-                        <input type="text" id="unit_kerja" name="unit_kerja" value="{{ old('unit_kerja') }}"
+                        <input id="unit_kerja" name="unit_kerja" type="text" value="{{ old('unit_kerja') }}"
                             placeholder="Masukkan unit kerja BCKS"
-                            class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
-
+                            class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                        @error('unit_kerja')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
 
-
-                    {{-- Angkatan --}}
-
                     <div class="md:col-span-2">
-
                         <label for="angkatan_pelatihan" class="mb-2 block text-sm font-semibold text-slate-700">
                             Angkatan Pelatihan BCKS
                         </label>
-
-                        <input type="text" id="angkatan_pelatihan" name="angkatan_pelatihan"
+                        <input id="angkatan_pelatihan" name="angkatan_pelatihan" type="text"
                             value="{{ old('angkatan_pelatihan') }}" placeholder="Contoh: Angkatan 1 Tahun 2025"
-                            class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
-
+                            class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                        @error('angkatan_pelatihan')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
-
                 </div>
+            </section>
 
-            </div>
-
-
-            {{-- =====================================================
-            B. IDENTITAS RESPONDEN
-            ====================================================== --}}
-
-            <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-
-                <div class="border-b border-slate-200 bg-slate-50 px-6 py-4">
-
-                    <h2 class="text-lg font-bold text-slate-800">
-                        B. Identitas Responden
-                    </h2>
-                    <p class="text-sm text-slate-500">Informasi pihak yang memberikan jawaban.</p>
-
+            {{-- B. IDENTITAS RESPONDEN --}}
+           <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div class="border-b border-slate-200 bg-slate-50 px-6 py-5">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800">B. Identitas Responden</h2>
+                        <p class="text-sm text-slate-500">Informasi pihak yang memberikan jawaban.</p>
+                    </div>
                 </div>
-
 
                 <div class="grid grid-cols-1 gap-5 p-6 md:grid-cols-2">
-
-                    {{-- Nama Responden --}}
-
                     <div>
-
                         <label for="nama_responden" class="mb-2 block text-sm font-semibold text-slate-700">
-                            Nama Responden
-                            <span class="text-red-500">*</span>
+                            Nama Responden <span class="text-red-500">*</span>
                         </label>
-
-                        <input type="text" id="nama_responden" name="nama_responden" value="{{ old('nama_responden') }}"
+                        <input id="nama_responden" name="nama_responden" type="text" value="{{ old('nama_responden') }}"
                             required placeholder="Masukkan nama responden"
-                            class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
-
+                            class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                        @error('nama_responden')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
 
-
-                    {{-- Unit Kerja Responden --}}
-
                     <div>
-
                         <label for="unit_kerja_responden" class="mb-2 block text-sm font-semibold text-slate-700">
                             Unit Kerja Responden
                         </label>
-
-                        <input type="text" id="unit_kerja_responden" name="unit_kerja_responden"
+                        <input id="unit_kerja_responden" name="unit_kerja_responden" type="text"
                             value="{{ old('unit_kerja_responden') }}" placeholder="Masukkan unit kerja responden"
-                            class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
-
+                            class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                        @error('unit_kerja_responden')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
 
-
-                    {{-- Status Responden --}}
-
                     <div class="md:col-span-2">
-
                         <label for="status_responden" class="mb-2 block text-sm font-semibold text-slate-700">
-                            Status Responden
-                            <span class="text-red-500">*</span>
+                            Status Responden <span class="text-red-500">*</span>
                         </label>
 
                         <select id="status_responden" name="status_responden" required
                             class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
 
-                            <option value="">
-                                Pilih status responden
-                            </option>
+                            <option value="">Pilih status responden</option>
 
                             <option value="BCKS" @selected(old('status_responden') === 'BCKS')>
                                 BCKS
                             </option>
 
                             <option value="Atasan Langsung / Pengawas Sekolah" @selected(old('status_responden') === 'Atasan Langsung / Pengawas Sekolah')>
-                                Atasan Langsung / Pengawas Sekolah
+                                Atasan Langsung / Kepala Sekolah
                             </option>
 
                             <option value="Perwakilan Guru / Tenaga Kependidikan"
                                 @selected(old('status_responden') === 'Perwakilan Guru / Tenaga Kependidikan')>
-                                Perwakilan Guru / Tenaga Kependidikan
+                                Guru / Tenaga Kependidikan
                             </option>
-
                         </select>
 
+                        @error('status_responden')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
-
                 </div>
+            </section>
 
-            </div>
-
-
-            {{-- =====================================================
-            C. PETUGAS MONEV
-            ====================================================== --}}
-
-            <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-
-                <div class="border-b border-slate-200 bg-slate-50 px-6 py-4">
-
-                    <h2 class="text-lg font-bold text-slate-800">
-                        C. Petugas Monev
-                    </h2>
-                    <p class="text-sm text-slate-500">Identitas petugas dan tanggal evaluasi.</p>
-                </div>
-
-
-                <div class="grid grid-cols-1 gap-5 p-6 md:grid-cols-2">
-
-                    {{-- Nama Petugas --}}
-
+            {{-- C. PETUGAS MONEV --}}
+             <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div class="border-b border-slate-200 bg-slate-50 px-6 py-5">
                     <div>
+                        <h2 class="text-lg font-bold text-slate-800">C. Petugas Monev</h2>
+                        <p class="text-sm text-slate-500">Identitas petugas dan tanggal evaluasi.</p>
+                    </div>
+                </div>
 
+                <div class="grid grid-cols-1 gap-5 p-6 md:grid-cols-3">
+                    <div>
                         <label for="nama_petugas_monev" class="mb-2 block text-sm font-semibold text-slate-700">
-                            Nama Petugas Monev
-                            <span class="text-red-500">*</span>
+                            Nama Petugas Monev <span class="text-red-500">*</span>
                         </label>
-
-                        <input type="text" id="nama_petugas_monev" name="nama_petugas_monev"
-                            value="{{ old('nama_petugas_monev') }}" required
-                            placeholder="Masukkan nama petugas" 
-                            class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
-
+                        <input id="nama_petugas_monev" name="nama_petugas_monev" type="text"
+                            value="{{ old('nama_petugas_monev') }}" required placeholder="Masukkan nama petugas"
+                            class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                        @error('nama_petugas_monev')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
 
-
-                    {{-- Unit Kerja Petugas --}}
-
                     <div>
-
                         <label for="unit_kerja_petugas" class="mb-2 block text-sm font-semibold text-slate-700">
                             Unit Kerja Petugas
                         </label>
-
-                        <input type="text" id="unit_kerja_petugas" name="unit_kerja_petugas"
-                            value="{{ old('unit_kerja_petugas') }}"   placeholder="Masukkan unit kerja petugas"
-                            class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
-
+                        <input id="unit_kerja_petugas" name="unit_kerja_petugas" type="text"
+                            value="{{ old('unit_kerja_petugas') }}" placeholder="Masukkan unit kerja petugas"
+                            class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                        @error('unit_kerja_petugas')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
-
-
-                    {{-- Tanggal Evaluasi --}}
 
                     <div>
-
                         <label for="tanggal_evaluasi" class="mb-2 block text-sm font-semibold text-slate-700">
-                            Tanggal Pelaksanaan Monev
-                            <span class="text-red-500">*</span>
+                            Tanggal Pelaksanaan Monev <span class="text-red-500">*</span>
                         </label>
-
-                        <input type="date" id="tanggal_evaluasi" name="tanggal_evaluasi"
+                        <input id="tanggal_evaluasi" name="tanggal_evaluasi" type="date"
                             value="{{ old('tanggal_evaluasi', date('Y-m-d')) }}" required
-                            class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
-
+                            class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                        @error('tanggal_evaluasi')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
-
                 </div>
-
-            </div>
+            </section>
 
 
             {{-- =====================================================
@@ -516,7 +451,8 @@
 
                 @foreach ($levels as $levelKey => $level)
 
-                    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                    <div data-bcks-level="{{ $loop->iteration }}"
+                        class="bcks-level-card overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-opacity duration-200">
 
                         {{-- HEADER LEVEL --}}
 
@@ -531,7 +467,6 @@
                             </p>
 
                         </div>
-
 
                         {{-- TABLE --}}
 
@@ -738,116 +673,103 @@
     JAVASCRIPT PROGRESS
     ========================================================== --}}
 
+
     <script>
-
         document.addEventListener('DOMContentLoaded', function () {
+            const statusSelect = document.getElementById('status_responden');
 
-            const totalIndikator = 27;
+            const progressBar = document.getElementById('bcks-progress-bar');
+            const progressPercent = document.getElementById('bcks-progress-percent');
+            const progressText = document.getElementById('bcks-progress-text');
+            const scoreText = document.getElementById('bcks-score-text');
 
-            const progressBar =
-                document.getElementById('bcks-progress-bar');
+            const levelCards = document.querySelectorAll('[data-bcks-level]');
 
-            const progressPercent =
-                document.getElementById('bcks-progress-percent');
+            function updateBcksForm() {
+                const status = statusSelect.value;
+                const isBcks = status === 'BCKS';
 
-            const progressText =
-                document.getElementById('bcks-progress-text');
-
-            const scoreText =
-                document.getElementById('bcks-score-text');
-
-
-            function updateBcksProgress() {
-
-                const checked = document.querySelectorAll(
-                    'input[type="radio"][name^="skor["]:checked'
-                );
-
-
-                const jumlahDiisi = checked.length;
-
+                let totalIndikator = 0;
+                let jumlahDiisi = 0;
                 let totalSkor = 0;
 
+                levelCards.forEach(function (card) {
+                    const level = Number(card.dataset.bcksLevel);
 
-                checked.forEach(function (radio) {
+                    const aktif = isBcks || level >= 3;
 
-                    totalSkor += Number(radio.value);
+                    card.hidden = !aktif;
 
-                });
-
-
-                const persen = Math.round(
-                    (jumlahDiisi / totalIndikator) * 100
-                );
-
-
-                if (progressBar) {
-
-                    progressBar.style.width =
-                        persen + '%';
-
-                }
-
-
-                if (progressPercent) {
-
-                    progressPercent.textContent =
-                        persen + '%';
-
-                }
-
-
-                if (progressText) {
-
-                    progressText.textContent =
-                        jumlahDiisi +
-                        ' / ' +
-                        totalIndikator +
-                        ' butir';
-
-                }
-
-
-                if (scoreText) {
-
-                    if (jumlahDiisi === 0) {
-
-                        scoreText.textContent =
-                            'Belum ada penilaian';
-
-                    } else {
-
-                        scoreText.textContent =
-                            totalSkor +
-                            ' / ' +
-                            (totalIndikator * 4) +
-                            ' poin';
-
-                    }
-
-                }
-
-            }
-
-
-            document
-                .querySelectorAll(
-                    'input[type="radio"][name^="skor["]'
-                )
-                .forEach(function (radio) {
-
-                    radio.addEventListener(
-                        'change',
-                        updateBcksProgress
+                    const radios = card.querySelectorAll(
+                        'input[type="radio"][name^="skor["]'
                     );
 
+                    radios.forEach(function (radio) {
+                        radio.disabled = !aktif;
+
+                        if (!aktif) {
+                            radio.checked = false;
+                        }
+                    });
+
+                    if (aktif) {
+                        const indikatorUnik = new Set();
+
+                        radios.forEach(function (radio) {
+                            indikatorUnik.add(radio.name);
+                        });
+
+                        totalIndikator += indikatorUnik.size;
+                    }
                 });
 
+                const checked = document.querySelectorAll(
+                    'input[type="radio"][name^="skor["]:checked:not(:disabled)'
+                );
 
-            updateBcksProgress();
+                checked.forEach(function (radio) {
+                    jumlahDiisi++;
+                    totalSkor += Number(radio.value);
+                });
 
+                const persen = totalIndikator > 0
+                    ? Math.round((jumlahDiisi / totalIndikator) * 100)
+                    : 0;
+
+                if (progressBar) {
+                    progressBar.style.width = persen + '%';
+                }
+
+                if (progressPercent) {
+                    progressPercent.textContent = persen + '%';
+                }
+
+                if (progressText) {
+                    progressText.textContent =
+                        jumlahDiisi + ' / ' + totalIndikator + ' butir';
+                }
+
+                if (scoreText) {
+                    if (jumlahDiisi === 0) {
+                        scoreText.textContent = 'Belum ada penilaian';
+                    } else {
+                        scoreText.textContent =
+                            totalSkor + ' / ' + (totalIndikator * 4) + ' poin';
+                    }
+                }
+            }
+
+            statusSelect.addEventListener('change', updateBcksForm);
+
+            document.querySelectorAll(
+                'input[type="radio"][name^="skor["]'
+            ).forEach(function (radio) {
+                radio.addEventListener('change', updateBcksForm);
+            });
+
+            updateBcksForm();
         });
-
     </script>
+
 
 @endsection
